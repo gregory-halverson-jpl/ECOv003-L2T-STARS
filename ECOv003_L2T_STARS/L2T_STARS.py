@@ -589,29 +589,19 @@ def install_STARS_jl(
 
     return result
 
-def instantiate_STARS_jl(package_location: str):
-    """
-    Activates the package_location directory as the active project and instantiates it.
-
-    Args:
-        package_location: The directory of the Julia package to activate and instantiate.
-
-    Returns:
-        A CompletedProcess object containing information about the execution of the Julia command.
-    """
-
+def instantiate_STARS_jl():
     julia_command = [
         "julia",
         "-e",
-        f'using Pkg; Pkg.activate("{package_location}"); Pkg.instantiate()'
+        f'using Pkg; Pkg.add("STARSDataFusion");'
     ]
 
     result = subprocess.run(julia_command, capture_output=True, text=True)
 
     if result.returncode == 0:
-        print(f"STARS.jl instantiated successfully in directory '{package_location}'!")
+        print(f"STARSDataFusion.jl instantiated successfully'!")
     else:
-        print("Error instantiating STARS.jl:")
+        print("Error instantiating STARSDataFusion.jl:")
         print(result.stderr)
 
     return result
@@ -641,7 +631,7 @@ def process_julia_data_fusion(
     julia_script_filename = join(abspath(dirname(__file__)), "process_ECOSTRESS_data_fusion_distributed.jl")
     # STARS_source_directory = join(abspath(dirname(__file__)), "STARS_jl")
     
-    # instantiate_STARS_jl(STARS_source_directory)
+    instantiate_STARS_jl()
 
     command = f'export JULIA_NUM_THREADS={threads}; julia --project="{abspath(dirname(__file__))}" --threads {threads} "{julia_script_filename}" "{num_workers}" "{tile}" "{coarse_cell_size}" "{fine_cell_size}" "{VIIRS_start_date}" "{VIIRS_end_date}" "{HLS_start_date}" "{HLS_end_date}" "{coarse_directory}" "{fine_directory}" "{posterior_filename}" "{posterior_UQ_filename}" "{posterior_flag_filename}" "{posterior_bias_filename}"'
 
