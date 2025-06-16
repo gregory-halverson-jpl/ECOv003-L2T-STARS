@@ -17,7 +17,9 @@ classifiers = [
 dependencies = [
     "colored-logging",
     "ECOv002-CMR>=1.0.4",
+    "ECOv003-exit-codes",
     "ECOv002-granules",
+    "ECOv003-granules",
     "GEOS5FP",
     "h5py",
     "harmonized-landsat-sentinel>=1.1.0",
