@@ -37,5 +37,5 @@ DEFAULT_CALIBRATE_FINE = False  # Flag for calibrating fine resolution data to c
 L2T_STARS_SHORT_NAME = "ECO_L2T_STARS"
 L2T_STARS_LONG_NAME = "ECOSTRESS Tiled Auxiliary NDVI and Albedo L2 Global 70 m"
 
-REMOVE_PRIOR = True
+REMOVE_PRIOR = False
 REMOVE_POSTERIOR = False
