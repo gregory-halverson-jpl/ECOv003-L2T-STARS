@@ -98,7 +98,7 @@ def load_prior(
                 cell_size=target_resolution,
             )
             # Assuming L2T_STARS_prior_granule has a .NDVI_bias attribute
-            if hasattr(L2T_STARS_prior_granule, "NDVI_bias") and L2T_STARS_prior_granule.NDVI_bias is not None:
+            if L2T_STARS_prior_granule.NDVI_bias is not None:
                 L2T_STARS_prior_granule.NDVI_bias.to_geotiff(prior_NDVI_bias_filename)
             else:
                 prior_NDVI_bias_filename = None # Set to None if not available
@@ -111,7 +111,7 @@ def load_prior(
                 cell_size=target_resolution,
             )
             # Assuming L2T_STARS_prior_granule has a .NDVI_bias_UQ attribute
-            if hasattr(L2T_STARS_prior_granule, "NDVI_bias_UQ") and L2T_STARS_prior_granule.NDVI_bias_UQ is not None:
+            if L2T_STARS_prior_granule.NDVI_bias_UQ is not None:
                 L2T_STARS_prior_granule.NDVI_bias_UQ.to_geotiff(prior_NDVI_bias_UQ_filename)
             else:
                 prior_NDVI_bias_UQ_filename = None # Set to None if not available
@@ -143,7 +143,7 @@ def load_prior(
                 cell_size=target_resolution,
             )
             # Assuming L2T_STARS_prior_granule has a .albedo_bias attribute
-            if hasattr(L2T_STARS_prior_granule, "albedo_bias") and L2T_STARS_prior_granule.albedo_bias is not None:
+            if L2T_STARS_prior_granule.albedo_bias is not None:
                 L2T_STARS_prior_granule.albedo_bias.to_geotiff(prior_albedo_bias_filename)
             else:
                 prior_albedo_bias_filename = None # Set to None if not available
@@ -156,7 +156,7 @@ def load_prior(
                 cell_size=target_resolution,
             )
             # Assuming L2T_STARS_prior_granule has a .albedo_bias_UQ attribute
-            if hasattr(L2T_STARS_prior_granule, "albedo_bias_UQ") and L2T_STARS_prior_granule.albedo_bias_UQ is not None:
+            if L2T_STARS_prior_granule.albedo_bias_UQ is not None:
                 L2T_STARS_prior_granule.albedo_bias_UQ.to_geotiff(prior_albedo_bias_UQ_filename)
             else:
                 prior_albedo_bias_UQ_filename = None # Set to None if not available
