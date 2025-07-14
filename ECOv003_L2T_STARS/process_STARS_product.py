@@ -59,6 +59,7 @@ def process_STARS_product(
     remove_input_staging: bool = True,
     remove_prior: bool = True,
     remove_posterior: bool = True,
+    initialize_julia: bool = False,
     threads: Union[int, str] = "auto",
     num_workers: int = 4,
 ):
@@ -103,6 +104,8 @@ def process_STARS_product(
                                        Defaults to True.
         remove_posterior (bool, optional): If True, remove posterior intermediate files after
                                            product generation. Defaults to True.
+        initialize_julia (bool, optional): If True, create a julia environment to run STARS in
+                                           as opposed to the default julia env. Defaults to False.
         threads (Union[int, str], optional): Number of Julia threads to use, or "auto".
                                             Defaults to "auto".
         num_workers (int, str): Number of Julia workers for distributed processing.
@@ -237,6 +240,7 @@ def process_STARS_product(
             prior_UQ_filename=prior.prior_NDVI_UQ_filename,
             prior_bias_filename=prior.prior_NDVI_bias_filename,
             prior_bias_UQ_filename=prior.prior_NDVI_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -257,6 +261,7 @@ def process_STARS_product(
             posterior_flag_filename=posterior_NDVI_flag_filename,
             posterior_bias_filename=posterior_NDVI_bias_filename,
             posterior_bias_UQ_filename=posterior_NDVI_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -335,6 +340,7 @@ def process_STARS_product(
             prior_UQ_filename=prior.prior_albedo_UQ_filename,
             prior_bias_filename=prior.prior_albedo_bias_filename,
             prior_bias_UQ_filename=prior.prior_albedo_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -355,6 +361,7 @@ def process_STARS_product(
             posterior_flag_filename=posterior_albedo_flag_filename,
             posterior_bias_filename=posterior_albedo_bias_filename,
             posterior_bias_UQ_filename=posterior_albedo_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )

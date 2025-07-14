@@ -473,6 +473,7 @@ def L2T_STARS(
                 remove_input_staging=remove_input_staging,
                 remove_prior=remove_prior,
                 remove_posterior=remove_posterior,
+                initialize_julia=initialize_julia,
                 threads=threads,
                 num_workers=num_workers,
             )
