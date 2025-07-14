@@ -116,6 +116,12 @@ def main():
         help="Do NOT remove posterior intermediate files after product generation.",
     )
     parser.add_argument(
+        "--initialize-julia",
+        action="store_true",
+        dest="initialize_julia",
+        help="Initialize a julia environment before running julia.",
+    )
+    parser.add_argument(
         "--threads",
         type=str,
         default="auto",
@@ -157,6 +163,7 @@ def main():
         remove_input_staging=args.remove_input_staging,
         remove_prior=args.remove_prior,
         remove_posterior=args.remove_posterior,
+        initialize_julia=args.initialize_julia,
         threads=args.threads,
         num_workers=args.num_workers,
         overwrite=args.overwrite, # Pass the new overwrite argument

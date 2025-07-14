@@ -106,7 +106,8 @@ def process_julia_BRDF(
         sensor_zenith_directory: str,
         relative_azimuth_directory: str,
         SZA_filename: str,
-        output_directory: str):
+        output_directory: str,
+        initialize_julia: bool):
     parent_directory = abspath(join(dirname(__file__), ".."))
     julia_source_directory = join(parent_directory, "VNP43NRT_jl")
     julia_script_filename = join(abspath(dirname(__file__)), "process_VNP43NRT.jl")
@@ -265,7 +266,8 @@ class VNP43NRT(VIIRSDownloaderAlbedo, VIIRSDownloaderNDVI):
             VNP43NRT_staging_directory: str = None,
             GEOS5FP_connection: GEOS5FP = None,
             GEOS5FP_download: str = None,
-            GEOS5FP_products: str = None):
+            GEOS5FP_products: str = None,
+            initialize_julia: bool = False):
         if working_directory is None:
             working_directory = VNP09GA.DEFAULT_WORKING_DIRECTORY
 
@@ -302,6 +304,7 @@ class VNP43NRT(VIIRSDownloaderAlbedo, VIIRSDownloaderNDVI):
         self.VNP43NRT_directory = VNP43NRT_directory
         self.GEOS5FP = GEOS5FP_connection
         self.VNP43NRT_staging_directory = VNP43NRT_staging_directory
+        self.initialize_julia = initialize_julia
 
     def __repr__(self):
         display_dict = {
@@ -493,7 +496,8 @@ class VNP43NRT(VIIRSDownloaderAlbedo, VIIRSDownloaderNDVI):
                 sensor_zenith_directory=sensor_zenith_directory,
                 relative_azimuth_directory=relative_azimuth_directory,
                 SZA_filename=SZA_filename,
-                output_directory=output_directory
+                output_directory=output_directory,
+                initialize_julia=self.initialize_julia,
             )
 
             WSA = Raster.open(join(output_directory, f"{date_UTC:%Y-%m-%d}_WSA.tif"))
