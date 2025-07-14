@@ -112,7 +112,8 @@ def process_julia_BRDF(
     julia_source_directory = join(parent_directory, "VNP43NRT_jl")
     julia_script_filename = join(abspath(dirname(__file__)), "process_VNP43NRT.jl")
 
-    instantiate_VNP43NRT_jl(julia_source_directory)
+    if initialize_julia:
+        instantiate_VNP43NRT_jl(julia_source_directory)
 
     command = f'julia "{julia_script_filename}" "{band}" "{h}" "{v}" "{tile_width_cells}" "{start_date:%Y-%m-%d}" "{end_date:%Y-%m-%d}" "{reflectance_directory}" "{solar_zenith_directory}" "{sensor_zenith_directory}" "{relative_azimuth_directory}" "{SZA_filename}" "{output_directory}"'
     logger.info(command)
