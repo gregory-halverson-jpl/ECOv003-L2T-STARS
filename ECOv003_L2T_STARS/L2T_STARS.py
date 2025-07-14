@@ -35,10 +35,6 @@ from .VNP43NRT import VNP43NRT
 from .runconfig import ECOSTRESSRunConfig
 from .L2TSTARSConfig import L2TSTARSConfig
 from .load_prior import load_prior
-from .generate_NDVI_coarse_directory import generate_NDVI_coarse_directory
-from .generate_NDVI_fine_directory import generate_NDVI_fine_directory
-from .generate_albedo_coarse_directory import generate_albedo_coarse_directory
-from .generate_albedo_fine_directory import generate_albedo_fine_directory
 from .generate_STARS_inputs import generate_STARS_inputs
 from .process_STARS_product import process_STARS_product
 from .retrieve_STARS_sources import retrieve_STARS_sources
@@ -405,19 +401,6 @@ def L2T_STARS(
             # Regenerate inputs to ensure all files are staged, even if not fused
             NDVI_coarse_geometry = HLS_connection.grid(tile=tile, cell_size=NDVI_resolution)
             albedo_coarse_geometry = HLS_connection.grid(tile=tile, cell_size=albedo_resolution)
-
-            NDVI_coarse_directory = generate_NDVI_coarse_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            NDVI_fine_directory = generate_NDVI_fine_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            albedo_coarse_directory = generate_albedo_coarse_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            albedo_fine_directory = generate_albedo_fine_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
 
             generate_STARS_inputs(
                 tile=tile,
