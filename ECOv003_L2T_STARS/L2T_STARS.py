@@ -240,6 +240,8 @@ def L2T_STARS(
         logger.info(f"VNP09GA products directory: {cl.dir(VNP09GA_products_directory)}")
         VNP43NRT_products_directory = join(sources_directory, DEFAULT_VNP43NRT_PRODUCTS_DIRECTORY)
         logger.info(f"VNP43NRT products directory: {cl.dir(VNP43NRT_products_directory)}")
+        DOWNSAMPLED_products_directory = join(sources_directory, DEFAULT_STARS_DOWNSAMPLED_DIRECTORY)
+        logger.info(f"DOWNSAMPLED products directory: {cl.dir(DOWNSAMPLED_products_directory)}")
 
         # Re-check for existing product (double-check in case another process created it) with overwrite option
         if not overwrite and exists(L2T_STARS_zip_filename):
@@ -429,11 +431,7 @@ def L2T_STARS(
                 target_resolution=target_resolution,
                 NDVI_coarse_geometry=NDVI_coarse_geometry,
                 albedo_coarse_geometry=albedo_coarse_geometry,
-                working_directory=working_directory,
-                NDVI_coarse_directory=NDVI_coarse_directory,
-                NDVI_fine_directory=NDVI_fine_directory,
-                albedo_coarse_directory=albedo_coarse_directory,
-                albedo_fine_directory=albedo_fine_directory,
+                downsampled_directory=DOWNSAMPLED_products_directory,
                 HLS_connection=HLS_connection,
                 NDVI_VIIRS_connection=NDVI_VIIRS_connection,
                 albedo_VIIRS_connection=albedo_VIIRS_connection,
@@ -454,7 +452,7 @@ def L2T_STARS(
                 NDVI_resolution=NDVI_resolution,
                 albedo_resolution=albedo_resolution,
                 target_resolution=target_resolution,
-                working_directory=working_directory,
+                downsampled_directory=DOWNSAMPLED_products_directory,
                 model_directory=model_directory,
                 input_staging_directory=input_staging_directory,
                 L2T_STARS_granule_directory=L2T_STARS_granule_directory,
