@@ -1096,7 +1096,7 @@ class VNP09GA:
 
         self.resampling = resampling
 
-        self._granules = pd.DataFrame({"date_UTC": {}, "tile": {}, "granule": {}})
+        self._granules = pd.DataFrame(columns=["date_UTC", "tile", "granule"])
 
         if working_directory is None:
             working_directory = self.DEFAULT_WORKING_DIRECTORY
