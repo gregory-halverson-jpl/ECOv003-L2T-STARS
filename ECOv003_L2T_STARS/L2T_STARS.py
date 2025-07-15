@@ -44,12 +44,12 @@ logger = logging.getLogger(__name__)
 def L2T_STARS(
     runconfig_filename: str,
     date_UTC: Union[date, str] = None,
-    spinup_days: int = DEFAULT_SPINUP_DAYS,
-    target_resolution: int = DEFAULT_TARGET_RESOLUTION,
-    NDVI_resolution: int = DEFAULT_NDVI_RESOLUTION,
-    albedo_resolution: int = DEFAULT_ALBEDO_RESOLUTION,
-    use_VNP43NRT: bool = DEFAULT_USE_VNP43NRT,
-    calibrate_fine: bool = DEFAULT_CALIBRATE_FINE,
+    spinup_days: int = SPINUP_DAYS,
+    target_resolution: int = TARGET_RESOLUTION,
+    NDVI_resolution: int = NDVI_RESOLUTION,
+    albedo_resolution: int = ALBEDO_RESOLUTION,
+    use_VNP43NRT: bool = USE_VNP43NRT,
+    calibrate_fine: bool = CALIBRATE_FINE,
     sources_only: bool = False,
     remove_input_staging: bool = True,
     remove_prior: bool = REMOVE_PRIOR,
@@ -217,27 +217,27 @@ def L2T_STARS(
         prior_date_UTC = prior.prior_date_UTC
 
         # Define various product and download directories
-        products_directory = join(working_directory, DEFAULT_STARS_PRODUCTS_DIRECTORY)
+        products_directory = join(working_directory, STARS_PRODUCTS_DIRECTORY)
         logger.info(f"STARS products directory: {cl.dir(products_directory)}")
-        HLS_download_directory = join(sources_directory, DEFAULT_HLS_DOWNLOAD_DIRECTORY)
+        HLS_download_directory = join(sources_directory, HLS_DOWNLOAD_DIRECTORY)
         logger.info(f"HLS download directory: {cl.dir(HLS_download_directory)}")
-        HLS_products_directory = join(sources_directory, DEFAULT_HLS_PRODUCTS_DIRECTORY)
+        HLS_products_directory = join(sources_directory, HLS_PRODUCTS_DIRECTORY)
         logger.info(f"HLS products directory: {cl.dir(HLS_products_directory)}")
-        VIIRS_download_directory = join(sources_directory, DEFAULT_VIIRS_DOWNLOAD_DIRECTORY)
+        VIIRS_download_directory = join(sources_directory, VIIRS_DOWNLOAD_DIRECTORY)
         logger.info(f"VIIRS download directory: {cl.dir(VIIRS_download_directory)}")
-        VIIRS_products_directory = join(sources_directory, DEFAULT_VIIRS_PRODUCTS_DIRECTORY)
+        VIIRS_products_directory = join(sources_directory, VIIRS_PRODUCTS_DIRECTORY)
         logger.info(f"VIIRS products directory: {cl.dir(VIIRS_products_directory)}")
-        VIIRS_mosaic_directory = join(sources_directory, DEFAUL_VIIRS_MOSAIC_DIRECTORY)
+        VIIRS_mosaic_directory = join(sources_directory, VIIRS_MOSAIC_DIRECTORY)
         logger.info(f"VIIRS mosaic directory: {cl.dir(VIIRS_mosaic_directory)}")
-        GEOS5FP_download_directory = join(sources_directory, DEFAULT_GEOS5FP_DOWNLOAD_DIRECTORY)
+        GEOS5FP_download_directory = join(sources_directory, GEOS5FP_DOWNLOAD_DIRECTORY)
         logger.info(f"GEOS-5 FP download directory: {cl.dir(GEOS5FP_download_directory)}")
-        GEOS5FP_products_directory = join(sources_directory, DEFAULT_GEOS5FP_PRODUCTS_DIRECTORY)
+        GEOS5FP_products_directory = join(sources_directory, GEOS5FP_PRODUCTS_DIRECTORY)
         logger.info(f"GEOS-5 FP products directory: {cl.dir(GEOS5FP_products_directory)}")
-        VNP09GA_products_directory = join(sources_directory, DEFAULT_VNP09GA_PRODUCTS_DIRECTORY)
+        VNP09GA_products_directory = join(sources_directory, VNP09GA_PRODUCTS_DIRECTORY)
         logger.info(f"VNP09GA products directory: {cl.dir(VNP09GA_products_directory)}")
-        VNP43NRT_products_directory = join(sources_directory, DEFAULT_VNP43NRT_PRODUCTS_DIRECTORY)
+        VNP43NRT_products_directory = join(sources_directory, VNP43NRT_PRODUCTS_DIRECTORY)
         logger.info(f"VNP43NRT products directory: {cl.dir(VNP43NRT_products_directory)}")
-        DOWNSAMPLED_products_directory = join(sources_directory, DEFAULT_STARS_DOWNSAMPLED_DIRECTORY)
+        DOWNSAMPLED_products_directory = join(sources_directory, STARS_DOWNSAMPLED_DIRECTORY)
         logger.info(f"DOWNSAMPLED products directory: {cl.dir(DOWNSAMPLED_products_directory)}")
 
         # Re-check for existing product (double-check in case another process created it) with overwrite option
