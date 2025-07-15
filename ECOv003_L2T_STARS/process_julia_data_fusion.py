@@ -28,6 +28,7 @@ def process_julia_data_fusion(
         prior_bias_filename: str = None,
         prior_bias_UQ_filename: str = None,
         environment_name: str = "@ECOv003-L2T-STARS",  # Unused in current Julia command, but kept for consistency
+        initialize_julia: bool = False,
         threads: Union[int, str] = "auto",
         num_workers: int = 4):
     """
@@ -71,7 +72,8 @@ def process_julia_data_fusion(
     STARS_source_directory = abspath(dirname(__file__))
 
     # Instantiate Julia dependencies
-    instantiate_STARSDataFusion_jl(STARS_source_directory)
+    if instantiate_julia:
+        instantiate_STARSDataFusion_jl(STARS_source_directory)
 
     # Base Julia command with required arguments
     command = (

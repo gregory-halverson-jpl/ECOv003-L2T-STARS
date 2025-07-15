@@ -55,6 +55,7 @@ def process_STARS_product(
     remove_input_staging: bool = True,
     remove_prior: bool = True,
     remove_posterior: bool = True,
+    initialize_julia: bool = False,
     threads: Union[int, str] = "auto",
     num_workers: int = 4,
 ):
@@ -99,6 +100,8 @@ def process_STARS_product(
                                        Defaults to True.
         remove_posterior (bool, optional): If True, remove posterior intermediate files after
                                            product generation. Defaults to True.
+        initialize_julia (bool, optional): If True, create a julia environment to run STARS in
+                                           as opposed to the default julia env. Defaults to False.
         threads (Union[int, str], optional): Number of Julia threads to use, or "auto".
                                             Defaults to "auto".
         num_workers (int, str): Number of Julia workers for distributed processing.
@@ -208,6 +211,7 @@ def process_STARS_product(
             prior_UQ_filename=prior.prior_NDVI_UQ_filename,
             prior_bias_filename=prior.prior_NDVI_bias_filename,
             prior_bias_UQ_filename=prior.prior_NDVI_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -228,6 +232,7 @@ def process_STARS_product(
             posterior_flag_filename=posterior_NDVI_flag_filename,
             posterior_bias_filename=posterior_NDVI_bias_filename,
             posterior_bias_UQ_filename=posterior_NDVI_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -235,6 +240,8 @@ def process_STARS_product(
     # Open the resulting NDVI rasters
     NDVI = Raster.open(posterior_NDVI_filename)
     NDVI_UQ = Raster.open(posterior_NDVI_UQ_filename)
+    NDVI_bias = Raster.open(posterior_NDVI_bias_filename)
+    NDVI_UQ_bias = Raster.open(posterior_NDVI_bias_UQ_filename)
     NDVI_flag = Raster.open(posterior_NDVI_flag_filename)
 
     # --- Process Albedo Data Fusion ---
@@ -306,6 +313,7 @@ def process_STARS_product(
             prior_UQ_filename=prior.prior_albedo_UQ_filename,
             prior_bias_filename=prior.prior_albedo_bias_filename,
             prior_bias_UQ_filename=prior.prior_albedo_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -326,6 +334,7 @@ def process_STARS_product(
             posterior_flag_filename=posterior_albedo_flag_filename,
             posterior_bias_filename=posterior_albedo_bias_filename,
             posterior_bias_UQ_filename=posterior_albedo_bias_UQ_filename,
+            initialize_julia=initialize_julia,
             threads=threads,
             num_workers=num_workers,
         )
@@ -333,6 +342,8 @@ def process_STARS_product(
     # Open the resulting albedo rasters
     albedo = Raster.open(posterior_albedo_filename)
     albedo_UQ = Raster.open(posterior_albedo_UQ_filename)
+    albedo_bias = Raster.open(posterior_albedo_bias_filename)
+    albedo_UQ_bias = Raster.open(posterior_albedo_bias_UQ_filename)
     albedo_flag = Raster.open(posterior_albedo_flag_filename)
 
     # --- Validate Output and Create Final Product ---
@@ -362,9 +373,13 @@ def process_STARS_product(
     # Add the generated layers to the granule object
     granule.add_layer("NDVI", NDVI, cmap=NDVI_COLORMAP)
     granule.add_layer("NDVI-UQ", NDVI_UQ, cmap="jet")
+    granule.add_layer("NDVI-bias", NDVI_bias, cmap="viridis")
+    granule.add_layer("NDVI-UQ-bias", NDVI_UQ_bias, cmap="viridis")
     granule.add_layer("NDVI-flag", NDVI_flag, cmap="jet")
     granule.add_layer("albedo", albedo, cmap=ALBEDO_COLORMAP)
     granule.add_layer("albedo-UQ", albedo_UQ, cmap="jet")
+    granule.add_layer("albedo-bias", albedo_bias, cmap="viridis")
+    granule.add_layer("albedo-UQ-bias", albedo_UQ_bias, cmap="viridis")
     granule.add_layer("albedo-flag", albedo_flag, cmap="jet")
 
     # Update metadata and write to the granule

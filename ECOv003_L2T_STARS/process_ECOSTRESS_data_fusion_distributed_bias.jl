@@ -8,24 +8,8 @@ using STARSDataFusion.sentinel_tiles
 using STARSDataFusion.HLS
 using STARSDataFusion.VNP43
 using Logging
-using Pkg
 using Statistics
 using Distributed
-Pkg.add("OpenSSL")
-using HTTP
-using JSON
-
-function read_json(file::String)::Dict
-    open(file, "r") do f
-        return JSON.parse(f)
-    end
-end
-
-function write_json(file::String, data::Dict)
-    open(file, "w") do f
-        JSON.print(f, data)
-    end
-end
 
 @info "processing STARS data fusion"
 
