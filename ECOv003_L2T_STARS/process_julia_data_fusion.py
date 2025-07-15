@@ -16,8 +16,8 @@ def process_julia_data_fusion(
         VIIRS_end_date: date,
         HLS_start_date: date,
         HLS_end_date: date,
-        coarse_directory: str,
-        fine_directory: str,
+        downsampled_directory: str,
+        product_name: str,
         posterior_filename: str,
         posterior_UQ_filename: str,
         posterior_flag_filename: str,
@@ -28,6 +28,7 @@ def process_julia_data_fusion(
         prior_bias_filename: str = None,
         prior_bias_UQ_filename: str = None,
         environment_name: str = "@ECOv003-L2T-STARS",  # Unused in current Julia command, but kept for consistency
+        initialize_julia: bool = False,
         threads: Union[int, str] = "auto",
         num_workers: int = 4):
     """
@@ -46,8 +47,8 @@ def process_julia_data_fusion(
         VIIRS_end_date (date): End date for VIIRS data processing.
         HLS_start_date (date): Start date for HLS data processing.
         HLS_end_date (date): End date for HLS data processing.
-        coarse_directory (str): Directory containing coarse resolution input images.
-        fine_directory (str): Directory containing fine resolution input images.
+        downsampled_directory (str): Directory containing coarse and fine downsampled data.
+        product_name (str): Name of the product, e.g. "NDVI" or "albedo"
         posterior_filename (str): Output path for the fused posterior mean image.
         posterior_UQ_filename (str): Output path for the fused posterior uncertainty image.
         posterior_flag_filename (str): Output path for the fused posterior flag image.
@@ -71,15 +72,16 @@ def process_julia_data_fusion(
     STARS_source_directory = abspath(dirname(__file__))
 
     # Instantiate Julia dependencies
-    instantiate_STARSDataFusion_jl(STARS_source_directory)
+    if initialize_julia:
+        instantiate_STARSDataFusion_jl(STARS_source_directory)
 
     # Base Julia command with required arguments
     command = (
         f'export JULIA_NUM_THREADS={threads}; julia --threads {threads} '
         f'"{julia_script_filename}" {num_workers} "{tile}" "{coarse_cell_size}" '
         f'"{fine_cell_size}" "{VIIRS_start_date}" "{VIIRS_end_date}" '
-        f'"{HLS_start_date}" "{HLS_end_date}" "{coarse_directory}" '
-        f'"{fine_directory}" "{posterior_filename}" "{posterior_UQ_filename}" '
+        f'"{HLS_start_date}" "{HLS_end_date}" "{downsampled_directory}" '
+        f'"{product_name}" "{posterior_filename}" "{posterior_UQ_filename}" '
         f'"{posterior_flag_filename}" "{posterior_bias_filename}" '
         f'"{posterior_bias_UQ_filename}"'
     )
