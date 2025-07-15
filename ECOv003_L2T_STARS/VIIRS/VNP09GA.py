@@ -1233,7 +1233,7 @@ class VNP09GA:
         if "date_UTC" not in self._granules.columns:
             raise ValueError(f"date_UTC column not in granules table")
 
-        subset = self._granules[(self._granules.date_UTC == date_UTC) & (self._granules.tile == tile)]
+        subset = self._granules[(self._granules['date_UTC'] == date_UTC) & (self._granules['tile'] == tile)]
         if len(subset) > 0:
             return subset.iloc[0].granule
 
