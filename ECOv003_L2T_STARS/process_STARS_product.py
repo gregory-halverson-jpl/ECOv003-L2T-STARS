@@ -269,6 +269,8 @@ def process_STARS_product(
     # Open the resulting NDVI rasters
     NDVI = Raster.open(posterior_NDVI_filename)
     NDVI_UQ = Raster.open(posterior_NDVI_UQ_filename)
+    NDVI_bias = Raster.open(posterior_NDVI_bias_filename)
+    NDVI_UQ_bias = Raster.open(posterior_NDVI_bias_UQ_filename)
     NDVI_flag = Raster.open(posterior_NDVI_flag_filename)
 
     # --- Process Albedo Data Fusion ---
@@ -369,6 +371,8 @@ def process_STARS_product(
     # Open the resulting albedo rasters
     albedo = Raster.open(posterior_albedo_filename)
     albedo_UQ = Raster.open(posterior_albedo_UQ_filename)
+    albedo_bias = Raster.open(posterior_albedo_bias_filename)
+    albedo_UQ_bias = Raster.open(posterior_albedo_bias_UQ_filename)
     albedo_flag = Raster.open(posterior_albedo_flag_filename)
 
     # --- Validate Output and Create Final Product ---
@@ -398,9 +402,13 @@ def process_STARS_product(
     # Add the generated layers to the granule object
     granule.add_layer("NDVI", NDVI, cmap=NDVI_COLORMAP)
     granule.add_layer("NDVI-UQ", NDVI_UQ, cmap="jet")
+    granule.add_layer("NDVI-bias", NDVI_bias, cmap="viridis")
+    granule.add_layer("NDVI-UQ-bias", NDVI_UQ_bias, cmap="viridis")
     granule.add_layer("NDVI-flag", NDVI_flag, cmap="jet")
     granule.add_layer("albedo", albedo, cmap=ALBEDO_COLORMAP)
     granule.add_layer("albedo-UQ", albedo_UQ, cmap="jet")
+    granule.add_layer("albedo-bias", albedo_bias, cmap="viridis")
+    granule.add_layer("albedo-UQ-bias", albedo_UQ_bias, cmap="viridis")
     granule.add_layer("albedo-flag", albedo_flag, cmap="jet")
 
     # Update metadata and write to the granule
