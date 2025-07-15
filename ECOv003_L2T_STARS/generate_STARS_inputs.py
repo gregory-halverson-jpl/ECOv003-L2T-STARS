@@ -1,7 +1,7 @@
 from typing import Union
 from datetime import date, datetime
 from dateutil.rrule import rrule, DAILY
-import os
+from os.path import exists
 import logging
 
 import colored_logging as cl
@@ -118,7 +118,7 @@ def generate_STARS_inputs(
 
         try:
             # Cache whether the NDVI coarse exists to avoid ToCToU
-            NDVI_coarse_exists = os.path.exists(NDVI_coarse_filename)
+            NDVI_coarse_exists = exists(NDVI_coarse_filename)
             if not NDVI_coarse_exists:
                 logger.info(f"preparing coarse image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}")
 
@@ -134,7 +134,7 @@ def generate_STARS_inputs(
 
             if processing_date >= HLS_start_date:
                 try:
-                    if not os.path.exists(NDVI_fine_filename):
+                    if not exists(NDVI_fine_filename):
                         logger.info(
                             f"preparing fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}")
 
@@ -166,7 +166,7 @@ def generate_STARS_inputs(
 
         try:
             # Cache whether the albedo coarse exists to avoid ToCToU
-            albedo_coarse_exists = os.path.exists(albedo_coarse_filename)
+            albedo_coarse_exists = exists(albedo_coarse_filename)
             if not albedo_coarse_exists:
                 logger.info(
                     f"preparing coarse image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}")
@@ -183,7 +183,7 @@ def generate_STARS_inputs(
 
             if processing_date >= HLS_start_date:
                 try:
-                    if not os.path.exists(albedo_fine_filename):
+                    if not exists(albedo_fine_filename):
                         logger.info(
                             f"preparing fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}")
 
