@@ -24,6 +24,9 @@ VNP09GA_PRODUCTS_DIRECTORY = "VNP09GA_products"
 VNP43NRT_PRODUCTS_DIRECTORY = "VNP43NRT_products"
 STARS_DOWNSAMPLED_DIRECTORY = "DOWNSAMPLED_products"
 
+# environment behavior
+INITIALIZE_JULIA = False  # Flag to initialize Julia environment
+
 # Processing parameters
 VIIRS_GIVEUP_DAYS = 4  # Number of days to give up waiting for VIIRS data
 SPINUP_DAYS = 7  # Spin-up period for time-series analysis
@@ -33,10 +36,16 @@ ALBEDO_RESOLUTION = 980  # Albedo coarse resolution in meters
 USE_SPATIAL = False  # Flag for using spatial interpolation (currently unused)
 USE_VNP43NRT = True  # Flag for using VNP43NRT VIIRS product
 CALIBRATE_FINE = False  # Flag for calibrating fine resolution data to coarse
+THREADS = "auto"  # Number of threads to use, 'auto' for automatic detection
+WORKERS = 4  # Number of worker processes for parallel processing
+OVERWRITE = False  # Flag to overwrite existing files
+SOURCES_ONLY = False  # Flag to only process sources without further analysis
+REMOVE_INPUT_STAGING = True  # Flag to remove input staging files after processing
 
 # Product short and long names
 L2T_STARS_SHORT_NAME = "ECO_L2T_STARS"
 L2T_STARS_LONG_NAME = "ECOSTRESS Tiled Auxiliary NDVI and Albedo L2 Global 70 m"
 
-REMOVE_PRIOR = False
-REMOVE_POSTERIOR = False
+# prior and posterior model state behavior
+REMOVE_PRIOR = True
+REMOVE_POSTERIOR = True

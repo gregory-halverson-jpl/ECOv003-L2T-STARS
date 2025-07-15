@@ -50,14 +50,14 @@ def L2T_STARS(
     albedo_resolution: int = ALBEDO_RESOLUTION,
     use_VNP43NRT: bool = USE_VNP43NRT,
     calibrate_fine: bool = CALIBRATE_FINE,
-    sources_only: bool = False,
-    remove_input_staging: bool = True,
+    sources_only: bool = SOURCES_ONLY,
+    remove_input_staging: bool = REMOVE_INPUT_STAGING,
     remove_prior: bool = REMOVE_PRIOR,
     remove_posterior: bool = REMOVE_POSTERIOR,
-    initialize_julia: bool = False,
-    threads: Union[int, str] = "auto",
-    num_workers: int = 4,
-    overwrite: bool = False, # New parameter for overwriting existing files
+    initialize_julia: bool = INITIALIZE_JULIA,
+    threads: Union[int, str] = THREADS,
+    num_workers: int = WORKERS,
+    overwrite: bool = OVERWRITE, # New parameter for overwriting existing files
 ) -> int:
     """
     ECOSTRESS Collection 3 L2T_STARS PGE (Product Generation Executive).
