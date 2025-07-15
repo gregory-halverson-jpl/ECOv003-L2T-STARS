@@ -72,7 +72,7 @@ def process_julia_data_fusion(
     STARS_source_directory = abspath(dirname(__file__))
 
     # Instantiate Julia dependencies
-    if instantiate_julia:
+    if initialize_julia:
         instantiate_STARSDataFusion_jl(STARS_source_directory)
 
     # Base Julia command with required arguments
