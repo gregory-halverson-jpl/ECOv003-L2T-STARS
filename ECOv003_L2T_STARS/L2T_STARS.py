@@ -58,6 +58,7 @@ def L2T_STARS(
     remove_input_staging: bool = True,
     remove_prior: bool = True,
     remove_posterior: bool = True,
+    initialize_julia: bool = False,
     threads: Union[int, str] = "auto",
     num_workers: int = 4,
     overwrite: bool = False, # New parameter for overwriting existing files
@@ -283,6 +284,7 @@ def L2T_STARS(
                     GEOS5FP_products=GEOS5FP_products_directory,
                     VNP09GA_directory=VNP09GA_products_directory,
                     VNP43NRT_directory=VNP43NRT_products_directory,
+                    initialize_julia=initialize_julia,
                 )
 
                 albedo_VIIRS_connection = VNP43NRT(
@@ -293,6 +295,7 @@ def L2T_STARS(
                     GEOS5FP_products=GEOS5FP_products_directory,
                     VNP09GA_directory=VNP09GA_products_directory,
                     VNP43NRT_directory=VNP43NRT_products_directory,
+                    initialize_julia=initialize_julia,
                 )
             except CMRServerUnreachable as e:
                 logger.exception(e)
@@ -470,6 +473,7 @@ def L2T_STARS(
                 remove_input_staging=remove_input_staging,
                 remove_prior=remove_prior,
                 remove_posterior=remove_posterior,
+                initialize_julia=initialize_julia,
                 threads=threads,
                 num_workers=num_workers,
             )
