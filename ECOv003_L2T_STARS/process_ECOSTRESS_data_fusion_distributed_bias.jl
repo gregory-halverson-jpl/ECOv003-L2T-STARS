@@ -62,10 +62,10 @@ HLS_start_date = Date(ARGS[7])
 @info "HLS start date: $(HLS_start_date)"
 HLS_end_date = Date(ARGS[8])
 @info "HLS end date: $(HLS_end_date)"
-coarse_directory = ARGS[9]
-@info "coarse inputs directory: $(coarse_directory)"
-fine_directory = ARGS[10]
-@info "fine inputs directory: $(fine_directory)"
+downsampled_directory = ARGS[9]
+@info "downsampled inputs directory: $(downsampled_directory)"
+product_name = ARGS[10]
+@info "Computing $(product_name) product"
 posterior_filename = ARGS[11]
 @info "posterior filename: $(posterior_filename)"
 posterior_UQ_filename = ARGS[12]
@@ -114,20 +114,29 @@ y_fine_size = size(y_fine)[1]
 @info "fine x size: $(x_fine_size)"
 @info "fine y size: $(y_fine_size)"
 
-coarse_image_filenames = sort(glob("*.tif", coarse_directory))
-coarse_dates_found = [Date(split(basename(filename), "_")[3]) for filename in coarse_image_filenames]
-
-fine_image_filenames = sort(glob("*.tif", fine_directory))
-fine_dates_found = [Date(split(basename(filename), "_")[3]) for filename in fine_image_filenames]
-
+# The range of dates to check for VIIRS files
 coarse_start_date = VIIRS_start_date
 coarse_end_date = VIIRS_end_date
 
+# Check each coarse date for a downsampled image
+# For each day we find, convert the date directory back into a date object
+coarse_dates = [coarse_start_date + Day(d - 1) for d in 1:((coarse_end_date - coarse_start_date).value + 1)]
+coarse_image_filenames = [joinpath("$(downsampled_directory)", "$(year(date))", "$(Dates.format(date, dateformat"yyyy-mm-dd"))", "$(tile)", "STARS_$(product_name)_$(tile)_$(coarse_cell_size)m.tif") for date in coarse_dates]
+coarse_image_filenames = [filename for filename in coarse_image_filenames if ispath(filename)]
+coarse_dates_found = [Date(basename(dirname(dirname(filename)))) for filename in coarse_image_filenames]
+
+# The range of dates to check for HLS files
 fine_flag_start_date = HLS_end_date - Day(7)
 fine_start_date = HLS_start_date
 fine_end_date = HLS_end_date
 
+# Check each fine date for a downsampled image
+# For each day we find, convert the date directory back into a date object
 dates = [fine_start_date + Day(d - 1) for d in 1:((fine_end_date - fine_start_date).value + 1)]
+fine_image_filenames = [joinpath("$(downsampled_directory)", "$(year(date))", "$(Dates.format(date, dateformat"yyyy-mm-dd"))", "$(tile)", "STARS_$(product_name)_$(tile)_$(fine_cell_size)m.tif") for date in dates]
+fine_image_filenames = [filename for filename in fine_image_filenames if ispath(filename)]
+fine_dates_found = [Date(basename(dirname(dirname(filename)))) for filename in fine_image_filenames]
+
 t = Ti(dates)
 coarse_dims = (x_coarse, y_coarse, t)
 fine_dims = (x_fine, y_fine, t)

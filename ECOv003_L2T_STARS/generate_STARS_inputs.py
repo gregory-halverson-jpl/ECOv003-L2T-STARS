@@ -1,6 +1,7 @@
 from typing import Union
 from datetime import date, datetime
 from dateutil.rrule import rrule, DAILY
+from os.path import exists
 import logging
 
 import colored_logging as cl
@@ -16,6 +17,7 @@ from .generate_NDVI_coarse_image import generate_NDVI_coarse_image
 from .generate_NDVI_fine_image import generate_NDVI_fine_image
 from .generate_albedo_coarse_image import generate_albedo_coarse_image
 from .generate_albedo_fine_image import generate_albedo_fine_image
+from .generate_downsampled_filename import generate_downsampled_filename
 from .calibrate_fine_to_coarse import calibrate_fine_to_coarse
 from .VIIRS.VIIRSDownloader import VIIRSDownloaderAlbedo, VIIRSDownloaderNDVI
 
@@ -33,11 +35,7 @@ def generate_STARS_inputs(
     target_resolution: int,
     NDVI_coarse_geometry: RasterGeometry,
     albedo_coarse_geometry: RasterGeometry,
-    working_directory: str,
-    NDVI_coarse_directory: str,
-    NDVI_fine_directory: str,
-    albedo_coarse_directory: str,
-    albedo_fine_directory: str,
+    downsampled_directory: str,
     HLS_connection: HLS2CMR,
     NDVI_VIIRS_connection: VIIRSDownloaderNDVI,
     albedo_VIIRS_connection: VIIRSDownloaderAlbedo,
@@ -80,68 +78,83 @@ def generate_STARS_inputs(
     """
     missing_coarse_dates = set()  # Track dates where coarse data could not be generated
 
+    logger.info(f"preparing coarse and fine images for STARS at {cl.place(tile)}")
+
     # Process each day within the VIIRS data fusion window
     for processing_date in [
         get_date(dt) for dt in rrule(DAILY, dtstart=VIIRS_start_date, until=VIIRS_end_date)
     ]:
-        logger.info(
-            f"Preparing coarse image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}"
+        NDVI_coarse_filename = generate_downsampled_filename(
+            directory=downsampled_directory,
+            variable="NDVI",
+            date_UTC=processing_date,
+            tile=tile,
+            cell_size=NDVI_resolution
+        )
+
+        NDVI_fine_filename = generate_downsampled_filename(
+            directory=downsampled_directory,
+            variable="NDVI",
+            date_UTC=processing_date,
+            tile=tile,
+            cell_size=target_resolution
+        )
+
+        albedo_coarse_filename = generate_downsampled_filename(
+            directory=downsampled_directory,
+            variable="albedo",
+            date_UTC=processing_date,
+            tile=tile,
+            cell_size=albedo_resolution
+        )
+
+        albedo_fine_filename = generate_downsampled_filename(
+            directory=downsampled_directory,
+            variable="albedo",
+            date_UTC=processing_date,
+            tile=tile,
+            cell_size=target_resolution
         )
 
         try:
-            # Generate coarse NDVI image
-            NDVI_coarse_image = generate_NDVI_coarse_image(
-                date_UTC=processing_date,
-                VIIRS_connection=NDVI_VIIRS_connection,
-                geometry=NDVI_coarse_geometry,
-            )
+            # Cache whether the NDVI coarse exists to avoid ToCToU
+            NDVI_coarse_exists = exists(NDVI_coarse_filename)
+            if not NDVI_coarse_exists:
+                logger.info(f"preparing coarse image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}")
 
-            # Define filename for coarse NDVI and save
-            NDVI_coarse_filename = generate_filename(
-                directory=NDVI_coarse_directory,
-                variable="NDVI",
-                date_UTC=processing_date,
-                tile=tile,
-                cell_size=NDVI_resolution,
-            )
-            logger.info(
-                f"Saving coarse image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}: {NDVI_coarse_filename}"
-            )
-            NDVI_coarse_image.to_geotiff(NDVI_coarse_filename)
-
-            # If the processing date is within the HLS range, generate fine NDVI
-            if processing_date >= HLS_start_date:
-                logger.info(
-                    f"Preparing fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}"
+                NDVI_coarse_image = generate_NDVI_coarse_image(
+                    date_UTC=processing_date,
+                    VIIRS_connection=NDVI_VIIRS_connection,
+                    geometry=NDVI_coarse_geometry
                 )
+
+                logger.info(
+                    f"saving coarse image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}: {NDVI_coarse_filename}")
+                NDVI_coarse_image.to_geotiff(NDVI_coarse_filename)
+
+            if processing_date >= HLS_start_date:
                 try:
-                    NDVI_fine_image = generate_NDVI_fine_image(
-                        date_UTC=processing_date,
-                        tile=tile,
-                        HLS_connection=HLS_connection,
-                    )
-
-                    # Optionally calibrate the fine NDVI image to the coarse NDVI image
-                    if calibrate_fine:
+                    if not exists(NDVI_fine_filename):
                         logger.info(
-                            f"Calibrating fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}"
-                        )
-                        NDVI_fine_image = calibrate_fine_to_coarse(
-                            NDVI_fine_image, NDVI_coarse_image
+                            f"preparing fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}")
+
+                        NDVI_fine_image = generate_NDVI_fine_image(
+                            date_UTC=processing_date,
+                            tile=tile,
+                            HLS_connection=HLS_connection
                         )
 
-                    # Define filename for fine NDVI and save
-                    NDVI_fine_filename = generate_filename(
-                        directory=NDVI_fine_directory,
-                        variable="NDVI",
-                        date_UTC=processing_date,
-                        tile=tile,
-                        cell_size=target_resolution,
-                    )
-                    logger.info(
-                        f"Saving fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}: {NDVI_fine_filename}"
-                    )
-                    NDVI_fine_image.to_geotiff(NDVI_fine_filename)
+                        if calibrate_fine:
+                            # Ensure that the NDVI_coarse_image variable is set
+                            if NDVI_coarse_exists:
+                                NDVI_coarse_image = Raster.open(NDVI_coarse_filename)
+                            logger.info(
+                                f"calibrating fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}")
+                            NDVI_fine_image = calibrate_fine_to_coarse(NDVI_fine_image, NDVI_coarse_image)
+
+                        logger.info(
+                            f"saving fine image for STARS NDVI at {cl.place(tile)} on {cl.time(processing_date)}: {NDVI_fine_filename}")
+                        NDVI_fine_image.to_geotiff(NDVI_fine_filename)
                 except Exception:  # Catch any exception during HLS fine image generation
                     logger.info(f"HLS NDVI is not available on {processing_date}")
         except Exception as e:
@@ -151,63 +164,47 @@ def generate_STARS_inputs(
             )
             missing_coarse_dates.add(processing_date)  # Add date to missing set
 
-        logger.info(
-            f"Preparing coarse image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}"
-        )
         try:
-            # Generate coarse albedo image
-            albedo_coarse_image = generate_albedo_coarse_image(
-                date_UTC=processing_date,
-                VIIRS_connection=albedo_VIIRS_connection,
-                geometry=albedo_coarse_geometry,
-            )
-
-            # Define filename for coarse albedo and save
-            albedo_coarse_filename = generate_filename(
-                directory=albedo_coarse_directory,
-                variable="albedo",
-                date_UTC=processing_date,
-                tile=tile,
-                cell_size=albedo_resolution,
-            )
-            logger.info(
-                f"Saving coarse image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}: {albedo_coarse_filename}"
-            )
-            albedo_coarse_image.to_geotiff(albedo_coarse_filename)
-
-            # If the processing date is within the HLS range, generate fine albedo
-            if processing_date >= HLS_start_date:
+            # Cache whether the albedo coarse exists to avoid ToCToU
+            albedo_coarse_exists = exists(albedo_coarse_filename)
+            if not albedo_coarse_exists:
                 logger.info(
-                    f"Preparing fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}"
+                    f"preparing coarse image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}")
+
+                albedo_coarse_image = generate_albedo_coarse_image(
+                    date_UTC=processing_date,
+                    VIIRS_connection=albedo_VIIRS_connection,
+                    geometry=albedo_coarse_geometry
                 )
+
+                logger.info(
+                    f"saving coarse image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}: {albedo_coarse_filename}")
+                albedo_coarse_image.to_geotiff(albedo_coarse_filename)
+
+            if processing_date >= HLS_start_date:
                 try:
-                    albedo_fine_image = generate_albedo_fine_image(
-                        date_UTC=processing_date,
-                        tile=tile,
-                        HLS_connection=HLS_connection,
-                    )
-
-                    # Optionally calibrate the fine albedo image to the coarse albedo image
-                    if calibrate_fine:
+                    if not exists(albedo_fine_filename):
                         logger.info(
-                            f"Calibrating fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}"
-                        )
-                        albedo_fine_image = calibrate_fine_to_coarse(
-                            albedo_fine_image, albedo_coarse_image
+                            f"preparing fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}")
+
+                        albedo_fine_image = generate_albedo_fine_image(
+                            date_UTC=processing_date,
+                            tile=tile,
+                            HLS_connection=HLS_connection
                         )
 
-                    # Define filename for fine albedo and save
-                    albedo_fine_filename = generate_filename(
-                        directory=albedo_fine_directory,
-                        variable="albedo",
-                        date_UTC=processing_date,
-                        tile=tile,
-                        cell_size=target_resolution,
-                    )
-                    logger.info(
-                        f"Saving fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}: {albedo_fine_filename}"
-                    )
-                    albedo_fine_image.to_geotiff(albedo_fine_filename)
+                        if calibrate_fine:
+                            # Ensure that the albedo_coarse_image variable is set
+                            if albedo_coarse_exists:
+                                albedo_coarse_image = Raster.open(albedo_coarse_filename)
+
+                            logger.info(
+                                f"calibrating fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}")
+                            albedo_fine_image = calibrate_fine_to_coarse(albedo_fine_image, albedo_coarse_image)
+
+                        logger.info(
+                            f"saving fine image for STARS albedo at {cl.place(tile)} on {cl.time(processing_date)}: {albedo_fine_filename}")
+                        albedo_fine_image.to_geotiff(albedo_fine_filename)
                 except Exception:  # Catch any exception during HLS fine image generation
                     logger.info(f"HLS albedo is not available on {processing_date}")
         except Exception as e:
@@ -217,7 +214,12 @@ def generate_STARS_inputs(
             )
             missing_coarse_dates.add(processing_date)  # Add date to missing set
 
-    # Check for missing coarse dates within the give-up window
+    # We need to deal with the possibility that VIIRS has not yet published their data yet.
+    #  VIIRS_GIVEUP_DAYS is the number of days before we assume that missing observations aren't coming.
+    #  If any missing days are closer to now than VIIRS_GIVEUP_DAYS, we want to retry this run later, when VIIRS
+    #  might have uploaded the missing observations. To cause this retry, we'll throw the `AncillaryLatency` exception.
+    #  L2T_STARS converts this exception to an exit code, and the orchestration system marks this run
+    #  as needing a retry at a later date.
     coarse_latency_dates = [
         d
         for d in missing_coarse_dates

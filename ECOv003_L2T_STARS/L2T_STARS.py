@@ -35,10 +35,6 @@ from .VNP43NRT import VNP43NRT
 from .runconfig import ECOSTRESSRunConfig
 from .L2TSTARSConfig import L2TSTARSConfig
 from .load_prior import load_prior
-from .generate_NDVI_coarse_directory import generate_NDVI_coarse_directory
-from .generate_NDVI_fine_directory import generate_NDVI_fine_directory
-from .generate_albedo_coarse_directory import generate_albedo_coarse_directory
-from .generate_albedo_fine_directory import generate_albedo_fine_directory
 from .generate_STARS_inputs import generate_STARS_inputs
 from .process_STARS_product import process_STARS_product
 from .retrieve_STARS_sources import retrieve_STARS_sources
@@ -241,6 +237,8 @@ def L2T_STARS(
         logger.info(f"VNP09GA products directory: {cl.dir(VNP09GA_products_directory)}")
         VNP43NRT_products_directory = join(sources_directory, DEFAULT_VNP43NRT_PRODUCTS_DIRECTORY)
         logger.info(f"VNP43NRT products directory: {cl.dir(VNP43NRT_products_directory)}")
+        DOWNSAMPLED_products_directory = join(sources_directory, DEFAULT_STARS_DOWNSAMPLED_DIRECTORY)
+        logger.info(f"DOWNSAMPLED products directory: {cl.dir(DOWNSAMPLED_products_directory)}")
 
         # Re-check for existing product (double-check in case another process created it) with overwrite option
         if not overwrite and exists(L2T_STARS_zip_filename):
@@ -407,19 +405,6 @@ def L2T_STARS(
             NDVI_coarse_geometry = HLS_connection.grid(tile=tile, cell_size=NDVI_resolution)
             albedo_coarse_geometry = HLS_connection.grid(tile=tile, cell_size=albedo_resolution)
 
-            NDVI_coarse_directory = generate_NDVI_coarse_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            NDVI_fine_directory = generate_NDVI_fine_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            albedo_coarse_directory = generate_albedo_coarse_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-            albedo_fine_directory = generate_albedo_fine_directory(
-                input_staging_directory=input_staging_directory, tile=tile
-            )
-
             generate_STARS_inputs(
                 tile=tile,
                 date_UTC=date_UTC,
@@ -432,11 +417,7 @@ def L2T_STARS(
                 target_resolution=target_resolution,
                 NDVI_coarse_geometry=NDVI_coarse_geometry,
                 albedo_coarse_geometry=albedo_coarse_geometry,
-                working_directory=working_directory,
-                NDVI_coarse_directory=NDVI_coarse_directory,
-                NDVI_fine_directory=NDVI_fine_directory,
-                albedo_coarse_directory=albedo_coarse_directory,
-                albedo_fine_directory=albedo_fine_directory,
+                downsampled_directory=DOWNSAMPLED_products_directory,
                 HLS_connection=HLS_connection,
                 NDVI_VIIRS_connection=NDVI_VIIRS_connection,
                 albedo_VIIRS_connection=albedo_VIIRS_connection,
@@ -457,7 +438,7 @@ def L2T_STARS(
                 NDVI_resolution=NDVI_resolution,
                 albedo_resolution=albedo_resolution,
                 target_resolution=target_resolution,
-                working_directory=working_directory,
+                downsampled_directory=DOWNSAMPLED_products_directory,
                 model_directory=model_directory,
                 input_staging_directory=input_staging_directory,
                 L2T_STARS_granule_directory=L2T_STARS_granule_directory,

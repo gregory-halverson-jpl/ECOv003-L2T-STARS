@@ -17,10 +17,6 @@ from ECOv003_granules import L2TSTARS, NDVI_COLORMAP, ALBEDO_COLORMAP
 from ECOv003_exit_codes import BlankOutput
 
 from .VIIRS import VIIRSDownloaderNDVI, VIIRSDownloaderAlbedo
-from .generate_NDVI_coarse_directory import generate_NDVI_coarse_directory
-from .generate_NDVI_fine_directory import generate_NDVI_fine_directory
-from .generate_albedo_coarse_directory import generate_albedo_coarse_directory
-from .generate_albedo_fine_directory import generate_albedo_fine_directory
 from .generate_model_state_tile_date_directory import generate_model_state_tile_date_directory
 from .generate_STARS_inputs import generate_STARS_inputs
 from .generate_filename import generate_filename
@@ -43,7 +39,7 @@ def process_STARS_product(
     NDVI_resolution: int,
     albedo_resolution: int,
     target_resolution: int,
-    working_directory: str,
+    downsampled_directory: str,
     model_directory: str,
     input_staging_directory: str,
     L2T_STARS_granule_directory: str,
@@ -120,27 +116,6 @@ def process_STARS_product(
 
     logger.info(f"Processing the L2T_STARS product at tile {cl.place(tile)} for date {cl.time(date_UTC)}")
 
-    # Define and create input staging directories for coarse and fine NDVI/albedo
-    NDVI_coarse_directory = generate_NDVI_coarse_directory(
-        input_staging_directory=input_staging_directory, tile=tile
-    )
-    logger.info(f"Staging coarse NDVI images: {cl.dir(NDVI_coarse_directory)}")
-
-    NDVI_fine_directory = generate_NDVI_fine_directory(
-        input_staging_directory=input_staging_directory, tile=tile
-    )
-    logger.info(f"Staging fine NDVI images: {cl.dir(NDVI_fine_directory)}")
-
-    albedo_coarse_directory = generate_albedo_coarse_directory(
-        input_staging_directory=input_staging_directory, tile=tile
-    )
-    logger.info(f"Staging coarse albedo images: {cl.dir(albedo_coarse_directory)}")
-
-    albedo_fine_directory = generate_albedo_fine_directory(
-        input_staging_directory=input_staging_directory, tile=tile
-    )
-    logger.info(f"Staging fine albedo images: {cl.dir(albedo_fine_directory)}")
-
     # Define and create the directory for storing posterior model state files
     posterior_tile_date_directory = generate_model_state_tile_date_directory(
         model_directory=model_directory, tile=tile, date_UTC=date_UTC
@@ -160,11 +135,7 @@ def process_STARS_product(
         target_resolution=target_resolution,
         NDVI_coarse_geometry=NDVI_coarse_geometry,
         albedo_coarse_geometry=albedo_coarse_geometry,
-        working_directory=working_directory,
-        NDVI_coarse_directory=NDVI_coarse_directory,
-        NDVI_fine_directory=NDVI_fine_directory,
-        albedo_coarse_directory=albedo_coarse_directory,
-        albedo_fine_directory=albedo_fine_directory,
+        downsampled_directory=downsampled_directory,
         HLS_connection=HLS_connection,
         NDVI_VIIRS_connection=NDVI_VIIRS_connection,
         albedo_VIIRS_connection=albedo_VIIRS_connection,
@@ -229,8 +200,8 @@ def process_STARS_product(
             VIIRS_end_date=VIIRS_end_date,
             HLS_start_date=HLS_start_date,
             HLS_end_date=HLS_end_date,
-            coarse_directory=NDVI_coarse_directory,
-            fine_directory=NDVI_fine_directory,
+            downsampled_directory=downsampled_directory,
+            product_name="NDVI",
             posterior_filename=posterior_NDVI_filename,
             posterior_UQ_filename=posterior_NDVI_UQ_filename,
             posterior_flag_filename=posterior_NDVI_flag_filename,
@@ -254,8 +225,8 @@ def process_STARS_product(
             VIIRS_end_date=VIIRS_end_date,
             HLS_start_date=HLS_start_date,
             HLS_end_date=HLS_end_date,
-            coarse_directory=NDVI_coarse_directory,
-            fine_directory=NDVI_fine_directory,
+            downsampled_directory=downsampled_directory,
+            product_name="NDVI",
             posterior_filename=posterior_NDVI_filename,
             posterior_UQ_filename=posterior_NDVI_UQ_filename,
             posterior_flag_filename=posterior_NDVI_flag_filename,
@@ -331,8 +302,8 @@ def process_STARS_product(
             VIIRS_end_date=VIIRS_end_date,
             HLS_start_date=HLS_start_date,
             HLS_end_date=HLS_end_date,
-            coarse_directory=albedo_coarse_directory,
-            fine_directory=albedo_fine_directory,
+            downsampled_directory=downsampled_directory,
+            product_name="albedo",
             posterior_filename=posterior_albedo_filename,
             posterior_UQ_filename=posterior_albedo_UQ_filename,
             posterior_flag_filename=posterior_albedo_flag_filename,
@@ -356,8 +327,8 @@ def process_STARS_product(
             VIIRS_end_date=VIIRS_end_date,
             HLS_start_date=HLS_start_date,
             HLS_end_date=HLS_end_date,
-            coarse_directory=albedo_coarse_directory,
-            fine_directory=albedo_fine_directory,
+            downsampled_directory=downsampled_directory,
+            product_name="albedo",
             posterior_filename=posterior_albedo_filename,
             posterior_UQ_filename=posterior_albedo_UQ_filename,
             posterior_flag_filename=posterior_albedo_flag_filename,
@@ -483,7 +454,7 @@ def process_STARS_product(
     if remove_input_staging:
         if exists(input_staging_directory):
             logger.info(f"Removing input staging directory: {cl.dir(input_staging_directory)}")
-            shutil.rmtree(input_staging_directory)
+            shutil.rmtree(input_staging_directory, ignore_errors=True)
 
     if using_prior and remove_prior:
         # Remove prior intermediate files only if they exist
