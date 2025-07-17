@@ -46,36 +46,36 @@ def main():
     parser.add_argument(
         "--spinup-days",
         type=int,
-        default=DEFAULT_SPINUP_DAYS,
-        help=f"Number of days for the VIIRS time-series spin-up. Defaults to {DEFAULT_SPINUP_DAYS} days.",
+        default=SPINUP_DAYS,
+        help=f"Number of days for the VIIRS time-series spin-up. Defaults to {SPINUP_DAYS} days.",
         metavar="DAYS"
     )
     parser.add_argument(
         "--target-resolution",
         type=int,
-        default=DEFAULT_TARGET_RESOLUTION,
-        help=f"Desired output product resolution in meters. Defaults to {DEFAULT_TARGET_RESOLUTION}m.",
+        default=TARGET_RESOLUTION,
+        help=f"Desired output product resolution in meters. Defaults to {TARGET_RESOLUTION}m.",
         metavar="METERS"
     )
     parser.add_argument(
         "--ndvi-resolution",
         type=int,
-        default=DEFAULT_NDVI_RESOLUTION,
-        help=f"Resolution of coarse NDVI data in meters. Defaults to {DEFAULT_NDVI_RESOLUTION}m.",
+        default=NDVI_RESOLUTION,
+        help=f"Resolution of coarse NDVI data in meters. Defaults to {NDVI_RESOLUTION}m.",
         metavar="METERS"
     )
     parser.add_argument(
         "--albedo-resolution",
         type=int,
-        default=DEFAULT_ALBEDO_RESOLUTION,
-        help=f"Resolution of coarse albedo data in meters. Defaults to {DEFAULT_ALBEDO_RESOLUTION}m.",
+        default=ALBEDO_RESOLUTION,
+        help=f"Resolution of coarse albedo data in meters. Defaults to {ALBEDO_RESOLUTION}m.",
         metavar="METERS"
     )
     parser.add_argument(
         "--use-vnp43nrt",
         action="store_true",
-        default=DEFAULT_USE_VNP43NRT,
-        help=f"Use VNP43NRT for VIIRS products. Defaults to {'True' if DEFAULT_USE_VNP43NRT else 'False'}.",
+        default=USE_VNP43NRT,
+        help=f"Use VNP43NRT for VIIRS products. Defaults to {'True' if USE_VNP43NRT else 'False'}.",
     )
     parser.add_argument(
         "--no-vnp43nrt",
@@ -86,8 +86,8 @@ def main():
     parser.add_argument(
         "--calibrate-fine",
         action="store_true",
-        default=DEFAULT_CALIBRATE_FINE,
-        help=f"Calibrate fine resolution HLS data to coarse resolution VIIRS data. Defaults to {'True' if DEFAULT_CALIBRATE_FINE else 'False'}.",
+        default=CALIBRATE_FINE,
+        help=f"Calibrate fine resolution HLS data to coarse resolution VIIRS data. Defaults to {'True' if CALIBRATE_FINE else 'False'}.",
     )
     parser.add_argument(
         "--sources-only",
@@ -105,14 +105,14 @@ def main():
         "--no-remove-prior",
         action="store_false",
         dest="remove_prior",
-        default=True,
+        default=REMOVE_PRIOR,
         help="Do NOT remove prior intermediate files after use.",
     )
     parser.add_argument(
         "--no-remove-posterior",
         action="store_false",
         dest="remove_posterior",
-        default=True,
+        default=REMOVE_POSTERIOR,
         help="Do NOT remove posterior intermediate files after product generation.",
     )
     parser.add_argument(

@@ -11,11 +11,12 @@ import numpy as np
 import colored_logging as cl
 from rasters import Raster
 
-from harmonized_landsat_sentinel import HLS2CMR
+from harmonized_landsat_sentinel import HLS2Connection
 
 from ECOv003_granules import L2TSTARS, NDVI_COLORMAP, ALBEDO_COLORMAP
 from ECOv003_exit_codes import BlankOutput
 
+from .constants import *
 from .VIIRS import VIIRSDownloaderNDVI, VIIRSDownloaderAlbedo
 from .generate_model_state_tile_date_directory import generate_model_state_tile_date_directory
 from .generate_STARS_inputs import generate_STARS_inputs
@@ -47,14 +48,14 @@ def process_STARS_product(
     L2T_STARS_browse_filename: str,
     metadata: dict,
     prior: Prior,
-    HLS_connection: HLS2CMR,
+    HLS_connection: HLS2Connection,
     NDVI_VIIRS_connection: VIIRSDownloaderNDVI,
     albedo_VIIRS_connection: VIIRSDownloaderAlbedo,
     using_prior: bool = False,
     calibrate_fine: bool = False,
     remove_input_staging: bool = True,
-    remove_prior: bool = True,
-    remove_posterior: bool = True,
+    remove_prior: bool = REMOVE_PRIOR,
+    remove_posterior: bool = REMOVE_POSTERIOR,
     initialize_julia: bool = False,
     threads: Union[int, str] = "auto",
     num_workers: int = 4,
@@ -88,7 +89,7 @@ def process_STARS_product(
         L2T_STARS_browse_filename (str): Final path for the browse image.
         metadata (dict): Dictionary containing product metadata.
         prior (Prior): An object containing information about the prior product.
-        HLS_connection (HLS2CMR): An initialized HLS data connection object.
+        HLS_connection (HLS2Connection): An initialized HLS data connection object.
         NDVI_VIIRS_connection (VIIRSDownloaderNDVI): An initialized VIIRS NDVI downloader.
         albedo_VIIRS_connection (VIIRSDownloaderAlbedo): An initialized VIIRS albedo downloader.
         using_prior (bool, optional): If True, use the prior product in fusion. Defaults to False.
