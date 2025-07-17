@@ -7,7 +7,7 @@ from rasters import RasterGeometry
 
 import colored_logging as cl
 
-from harmonized_landsat_sentinel import HLS2CMR
+from harmonized_landsat_sentinel import HLS2Connection
 
 from harmonized_landsat_sentinel import (
     HLSTileNotAvailable,
@@ -31,9 +31,8 @@ def retrieve_STARS_sources(
     HLS_end_date: date,
     VIIRS_start_date: date,
     VIIRS_end_date: date,
-    HLS_connection: HLS2CMR,
-    VIIRS_connection: VNP43NRT,  # Using VNP43NRT as a representative VIIRS connection
-):
+    HLS_connection: HLS2Connection,
+    VIIRS_connection: VNP43NRT):
     """
     Retrieves necessary Harmonized Landsat Sentinel (HLS) and VIIRS source data.
 
@@ -48,7 +47,7 @@ def retrieve_STARS_sources(
         HLS_end_date (date): The end date for HLS data retrieval.
         VIIRS_start_date (date): The start date for VIIRS data retrieval.
         VIIRS_end_date (date): The end date for VIIRS data retrieval.
-        HLS_connection (HLS2CMR): An initialized HLS data connection object.
+        HLS_connection (HLS2Connection): An initialized HLS data connection object.
         VIIRS_connection (VNP43NRT): An initialized VIIRS data connection object
                                       (can be VNP43NRT, VNP43IA4, or VNP43MA3).
 

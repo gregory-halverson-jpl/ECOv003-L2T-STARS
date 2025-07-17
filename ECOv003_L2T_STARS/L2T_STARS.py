@@ -10,10 +10,12 @@ import colored_logging as cl
 import pandas as pd
 from dateutil import parser
 
+from sentinel_tiles import sentinel_tiles
+
 # Custom modules for Harmonized Landsat Sentinel (HLS) and ECOSTRESS data
 from harmonized_landsat_sentinel import (
     CMRServerUnreachable,
-    HLS2CMR,
+    HLS2Connection,
     HLSTileNotAvailable,
     HLSSentinelMissing,
     HLSLandsatMissing,
@@ -255,7 +257,7 @@ def L2T_STARS(
         # Initialize HLS data connection
         logger.info(f"Connecting to CMR Search server: {CMR_SEARCH_URL}")
         try:
-            HLS_connection = HLS2CMR(
+            HLS_connection = HLS2Connection(
                 working_directory=working_directory,
                 download_directory=HLS_download_directory,
                 # products_directory=HLS_products_directory,
@@ -268,7 +270,7 @@ def L2T_STARS(
             )
 
         # Check if the tile is on land (HLS tiles cover land and ocean, STARS is for land)
-        if not HLS_connection.tile_grid.land(tile=tile):
+        if not sentinel_tiles.land(tile=tile):
             raise LandFilter(f"Sentinel tile {tile} is not on land. Skipping processing.")
 
         # Initialize VIIRS data connections based on 'use_VNP43NRT' flag
