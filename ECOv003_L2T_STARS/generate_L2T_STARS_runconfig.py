@@ -98,7 +98,7 @@ def generate_L2T_STARS_runconfig(
 
     # Set default values for other parameters if not provided
     if build is None:
-        build = DEFAULT_BUILD
+        build = BUILD
     if working_directory is None:
         working_directory = "."
 
@@ -155,11 +155,11 @@ def generate_L2T_STARS_runconfig(
     # Resolve absolute paths for various directories if not already defined
     working_directory = abspath(expanduser(working_directory))
     if sources_directory is None:
-        sources_directory = join(working_directory, DEFAULT_STARS_SOURCES_DIRECTORY)
+        sources_directory = join(working_directory, STARS_SOURCES_DIRECTORY)
     if indices_directory is None:
-        indices_directory = join(working_directory, DEFAULT_STARS_INDICES_DIRECTORY)
+        indices_directory = join(working_directory, STARS_INDICES_DIRECTORY)
     if model_directory is None:
-        model_directory = join(working_directory, DEFAULT_STARS_MODEL_DIRECTORY)
+        model_directory = join(working_directory, STARS_MODEL_DIRECTORY)
 
     # Determine executable path; fall back to just the name if not found in PATH
     if executable_filename is None:
@@ -169,7 +169,7 @@ def generate_L2T_STARS_runconfig(
 
     # Define output and log file paths
     if output_directory is None:
-        output_directory = join(working_directory, DEFAULT_OUTPUT_DIRECTORY)
+        output_directory = join(working_directory, OUTPUT_DIRECTORY)
     output_directory = abspath(expanduser(output_directory))
     if log_filename is None:
         log_filename = join(working_directory, "log", f"{granule_ID}.log")

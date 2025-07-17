@@ -6,7 +6,7 @@ import logging
 
 import colored_logging as cl
 from rasters import Raster, RasterGeometry
-from harmonized_landsat_sentinel import HLS2CMR
+from harmonized_landsat_sentinel import HLS2Connection
 
 from ECOv003_exit_codes import AuxiliaryLatency
 
@@ -36,7 +36,7 @@ def generate_STARS_inputs(
     NDVI_coarse_geometry: RasterGeometry,
     albedo_coarse_geometry: RasterGeometry,
     downsampled_directory: str,
-    HLS_connection: HLS2CMR,
+    HLS_connection: HLS2Connection,
     NDVI_VIIRS_connection: VIIRSDownloaderNDVI,
     albedo_VIIRS_connection: VIIRSDownloaderAlbedo,
     calibrate_fine: bool = False,
@@ -67,7 +67,7 @@ def generate_STARS_inputs(
         NDVI_fine_directory (str): Directory for staging fine NDVI images.
         albedo_coarse_directory (str): Directory for staging coarse albedo images.
         albedo_fine_directory (str): Directory for staging fine albedo images.
-        HLS_connection (HLS2CMR): An initialized HLS data connection object.
+        HLS_connection (HLS2Connection): An initialized HLS data connection object.
         NDVI_VIIRS_connection (VIIRSDownloaderNDVI): An initialized VIIRS NDVI downloader.
         albedo_VIIRS_connection (VIIRSDownloaderAlbedo): An initialized VIIRS albedo downloader.
         calibrate_fine (bool, optional): If True, calibrate fine images to coarse images.

@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Define the template for the ECOv003_DL run-config XML
 ECOv003_DL_TEMPLATE = join(abspath(dirname(__file__)), "ECOv003_DL.xml")
 # Default build ID
-DEFAULT_BUILD = "0700"
+BUILD = "0700"
 
 def generate_downloader_runconfig(
         L2G_LSTE_filename: str,
@@ -133,17 +133,17 @@ def generate_downloader_runconfig(
 
     # Determine L2T STARS sources directory
     if L2T_STARS_sources_directory is None:
-        L2T_STARS_sources_directory = join(working_directory, DEFAULT_STARS_SOURCES_DIRECTORY)
+        L2T_STARS_sources_directory = join(working_directory, STARS_SOURCES_DIRECTORY)
     L2T_STARS_sources_directory = abspath(expanduser(L2T_STARS_sources_directory))
 
     # Determine L2T STARS indices directory
     if L2T_STARS_indices_directory is None:
-        L2T_STARS_indices_directory = join(working_directory, DEFAULT_STARS_INDICES_DIRECTORY)
+        L2T_STARS_indices_directory = join(working_directory, STARS_INDICES_DIRECTORY)
     L2T_STARS_indices_directory = abspath(expanduser(L2T_STARS_indices_directory))
 
     # Determine L2T STARS model directory
     if L2T_STARS_model_directory is None:
-        L2T_STARS_model_directory = join(working_directory, DEFAULT_STARS_MODEL_DIRECTORY)
+        L2T_STARS_model_directory = join(working_directory, STARS_MODEL_DIRECTORY)
     L2T_STARS_model_directory = abspath(expanduser(L2T_STARS_model_directory))
 
     # Determine executable filename
@@ -159,7 +159,7 @@ def generate_downloader_runconfig(
 
     # Set build ID
     if build is None:
-        build = DEFAULT_BUILD
+        build = BUILD
 
     # Set processing node
     if processing_node is None:

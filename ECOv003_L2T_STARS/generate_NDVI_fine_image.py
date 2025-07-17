@@ -4,12 +4,12 @@ import numpy as np
 import rasters as rt
 from rasters import Raster
 
-from harmonized_landsat_sentinel import HLS
+from harmonized_landsat_sentinel import HLS2Connection
 
 def generate_NDVI_fine_image(
         date_UTC: Union[date, str], 
         tile: str, 
-        HLS_connection: HLS) -> Raster:
+        HLS_connection: HLS2Connection) -> Raster:
     """
     Generates a fine-resolution NDVI image from HLS data.
 
