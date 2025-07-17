@@ -1246,7 +1246,7 @@ class VNP09GA:
         if len(granules) == 0:
             return None
 
-        if len(granules) > 0:
+        if len(granules) > 1:
             logger.warning("Found more VIIRS granules than expected")
 
         self.add_granules(granules)
