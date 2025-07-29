@@ -7,6 +7,7 @@ import sys
 from datetime import date, timedelta, datetime
 from glob import glob
 from os.path import abspath, expanduser, join, basename, splitext, exists, dirname
+import os
 from typing import Union, List
 import dateutil
 import numpy as np
@@ -115,9 +116,28 @@ def process_julia_BRDF(
     if initialize_julia:
         instantiate_VNP43NRT_jl(julia_source_directory)
 
-    command = f'julia "{julia_script_filename}" "{band}" "{h}" "{v}" "{tile_width_cells}" "{start_date:%Y-%m-%d}" "{end_date:%Y-%m-%d}" "{reflectance_directory}" "{solar_zenith_directory}" "{sensor_zenith_directory}" "{relative_azimuth_directory}" "{SZA_filename}" "{output_directory}"'
-    logger.info(command)
-    subprocess.run(command, shell=True)
+    # Set up the environment for the julia script
+    julia_env = os.environ.copy()
+    # Ensure that julia uses its own bundled GDAL instead of conda's GDAL
+    julia_env.pop("GDAL_DATA")
+    julia_env.pop("GDAL_DRIVER_PATH")
+
+    command = [
+        "julia", julia_script_filename,
+        band,
+        f"{h}", f"{v}",
+        f"{tile_width_cells}",
+        f"{start_date:%Y-%m-%d}", f"{end_date:%Y-%m-%d}",
+        reflectance_directory,
+        solar_zenith_directory,
+        sensor_zenith_directory,
+        relative_azimuth_directory,
+        SZA_filename,
+        output_directory,
+    ]
+
+    logger.info(" ".join(command))
+    subprocess.run(command, env=julia_env)
 
 class BRDFRetrievalFailed(RuntimeError):
     pass
