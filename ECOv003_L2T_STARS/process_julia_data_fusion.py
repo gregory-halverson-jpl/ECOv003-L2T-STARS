@@ -84,15 +84,18 @@ def process_julia_data_fusion(
     julia_env.pop("GDAL_DRIVER_PATH")
 
     # Base Julia command with required arguments
-    command = (
-        f'julia --threads {threads} '
-        f'"{julia_script_filename}" {num_workers} "{tile}" "{coarse_cell_size}" '
-        f'"{fine_cell_size}" "{VIIRS_start_date}" "{VIIRS_end_date}" '
-        f'"{HLS_start_date}" "{HLS_end_date}" "{downsampled_directory}" '
-        f'"{product_name}" "{posterior_filename}" "{posterior_UQ_filename}" '
-        f'"{posterior_flag_filename}" "{posterior_bias_filename}" '
-        f'"{posterior_bias_UQ_filename}"'
-    )
+    command = [
+        "julia", "--threads", f"{threads}", julia_script_filename,
+        f"{num_workers}",
+        tile,
+        f"{coarse_cell_size}", f"{fine_cell_size}",
+        f"{VIIRS_start_date}", f"{VIIRS_end_date}",
+        f"{HLS_start_date}", f"{HLS_end_date}",
+        downsampled_directory, product_name,
+        posterior_filename, posterior_UQ_filename,
+        posterior_flag_filename,
+        posterior_bias_filename, posterior_bias_UQ_filename,
+    ]
 
     # Conditionally add prior arguments if all prior filenames are provided and exist
     if all(
@@ -107,14 +110,14 @@ def process_julia_data_fusion(
         ]
     ):
         logger.info("Passing prior into Julia data fusion system")
-        command += (
-            f' "{prior_filename}" "{prior_UQ_filename}" "{prior_bias_filename}" '
-            f'"{prior_bias_UQ_filename}"'
-        )
+        command += [
+            prior_filename, prior_UQ_filename,
+            prior_bias_filename, prior_bias_UQ_filename,
+        ]
     else:
         logger.info("No complete prior set found; running Julia data fusion without prior.")
 
-    logger.info(f"Executing Julia command: {command}")
+    logger.info(f"Executing Julia command: {' '.join(command)}")
     # Execute the Julia command, adding the environment changes
     # This assumes the Julia executable is in the system's PATH.
     subprocess.run(command, check=False, env=julia_env)

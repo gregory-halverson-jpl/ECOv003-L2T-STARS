@@ -122,8 +122,21 @@ def process_julia_BRDF(
     julia_env.pop("GDAL_DATA")
     julia_env.pop("GDAL_DRIVER_PATH")
 
-    command = f'julia "{julia_script_filename}" "{band}" "{h}" "{v}" "{tile_width_cells}" "{start_date:%Y-%m-%d}" "{end_date:%Y-%m-%d}" "{reflectance_directory}" "{solar_zenith_directory}" "{sensor_zenith_directory}" "{relative_azimuth_directory}" "{SZA_filename}" "{output_directory}"'
-    logger.info(command)
+    command = [
+        "julia", julia_script_filename,
+        band,
+        f"{h}", f"{v}",
+        f"{tile_width_cells}",
+        f"{start_date:%Y-%m-%d}", f"{end_date:%Y-%m-%d}",
+        reflectance_directory,
+        solar_zenith_directory,
+        sensor_zenith_directory,
+        relative_azimuth_directory,
+        SZA_filename,
+        output_directory,
+    ]
+
+    logger.info(" ".join(command))
     subprocess.run(command, env=julia_env)
 
 class BRDFRetrievalFailed(RuntimeError):
