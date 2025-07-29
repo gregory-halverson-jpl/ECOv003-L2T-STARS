@@ -2,6 +2,7 @@ import subprocess
 from typing import Union
 from datetime import date
 from os.path import abspath, dirname, join, exists
+import os
 import logging
 
 from .instantiate_STARSDataFusion_jl import instantiate_STARSDataFusion_jl
@@ -75,9 +76,16 @@ def process_julia_data_fusion(
     if initialize_julia:
         instantiate_STARSDataFusion_jl(STARS_source_directory)
 
+    # Set up the environment for the julia script
+    julia_env = os.environ.copy()
+    julia_env["JULIA_NUM_THREADS"] = str(threads)
+    # Ensure that julia uses its own bundled GDAL instead of conda's GDAL
+    julia_env.pop("GDAL_DATA")
+    julia_env.pop("GDAL_DRIVER_PATH")
+
     # Base Julia command with required arguments
     command = (
-        f'export JULIA_NUM_THREADS={threads}; julia --threads {threads} '
+        f'julia --threads {threads} '
         f'"{julia_script_filename}" {num_workers} "{tile}" "{coarse_cell_size}" '
         f'"{fine_cell_size}" "{VIIRS_start_date}" "{VIIRS_end_date}" '
         f'"{HLS_start_date}" "{HLS_end_date}" "{downsampled_directory}" '
@@ -107,6 +115,6 @@ def process_julia_data_fusion(
         logger.info("No complete prior set found; running Julia data fusion without prior.")
 
     logger.info(f"Executing Julia command: {command}")
-    # Execute the Julia command. Using shell=True as the command string includes shell syntax (export).
+    # Execute the Julia command, adding the environment changes
     # This assumes the Julia executable is in the system's PATH.
-    subprocess.run(command, shell=True, check=False)
+    subprocess.run(command, check=False, env=julia_env)
