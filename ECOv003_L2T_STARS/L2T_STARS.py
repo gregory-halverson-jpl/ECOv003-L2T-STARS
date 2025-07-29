@@ -24,6 +24,8 @@ from harmonized_landsat_sentinel import (
     CMR_SEARCH_URL
 )
 
+from .LPDAAC.LPDAACDataPool import LPDAACServerUnreachable
+
 from ECOv003_exit_codes import *
 
 from ECOv002_granules import L2TLSTE
