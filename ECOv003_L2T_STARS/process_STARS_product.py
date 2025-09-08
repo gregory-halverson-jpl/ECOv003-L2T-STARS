@@ -384,6 +384,7 @@ def process_STARS_product(
     granule.add_layer("albedo-flag", albedo_flag, cmap="jet")
 
     # Update metadata and write to the granule
+    metadata["StandardMetadata"]["BuildID"] = build
     metadata["StandardMetadata"]["LocalGranuleID"] = basename(L2T_STARS_zip_filename)
     metadata["StandardMetadata"]["SISName"] = "Level 2 STARS Product Specification Document"
     granule.write_metadata(metadata)
