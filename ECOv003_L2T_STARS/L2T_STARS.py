@@ -28,7 +28,7 @@ from .LPDAAC.LPDAACDataPool import LPDAACServerUnreachable
 
 from ECOv003_exit_codes import *
 
-from ECOv002_granules import L2TLSTE
+from ECOv003_granules import L2TLSTE
 import urllib
 
 from .version import __version__
