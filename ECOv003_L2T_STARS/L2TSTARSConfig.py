@@ -7,6 +7,7 @@ import colored_logging as cl
 
 from ECOv003_exit_codes import *
 from ECOv003_granules import L2TLSTE
+from ECOv003_granules import L2TSTARS
 
 from .constants import *
 from .runconfig import ECOSTRESSRunConfig
@@ -165,9 +166,12 @@ class L2TSTARSConfig(ECOSTRESSRunConfig):
             time_UTC = l2t_lste_granule_obj.time_UTC
 
             # Construct the full granule ID and paths for the output product
-            granule_ID = (
-                f"ECOv003_L2T_STARS_{self.tile}_{time_UTC:%Y%m%d}_{self.build}_"
-                f"{self.product_counter:02d}"
+            granule_ID = L2TSTARS.generate_granule_name(
+                self.orbit,
+                self.scene,
+                self.tile,
+                time_UTC,
+                self.product_counter
             )
             self.granule_ID = granule_ID
             self.L2T_STARS_granule_directory = join(self.output_directory, granule_ID)
