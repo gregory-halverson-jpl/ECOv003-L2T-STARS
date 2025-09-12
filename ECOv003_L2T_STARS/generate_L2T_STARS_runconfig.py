@@ -12,6 +12,7 @@ import colored_logging as cl
 from pytictoc import TicToc  # Import pytictoc
 
 from ECOv003_granules import L2TLSTE
+from ECOv003_granules import L2TSTARS
 
 from .constants import *
 
@@ -110,7 +111,7 @@ def generate_L2T_STARS_runconfig(
 
     # Check for previous run-configs to avoid re-generating
     pattern = join(
-        working_directory, "runconfig", f"ECOv003_L2T_STARS_{tile}_*_{build}_*.xml"
+        working_directory, "runconfig", f"ECOv003_L2T_STARS_{tile}_*_*.xml"
     )
     logger.info(f"Scanning for previous run-configs: {cl.val(pattern)}")
     previous_runconfigs = glob(pattern)
@@ -137,9 +138,12 @@ def generate_L2T_STARS_runconfig(
         product_counter = 1
 
     # Format timestamp and generate granule ID
-    timestamp = f"{time_UTC:%Y%m%d}"
-    granule_ID = (
-        f"ECOv003_L2T_STARS_{tile}_{timestamp}_{build}_{product_counter:02d}"
+    granule_ID = L2TSTARS.generate_granule_name(
+        orbit,
+        scene,
+        tile,
+        time_UTC,
+        process_count=product_counter,
     )
 
     # Define run-config filename and resolve absolute path
