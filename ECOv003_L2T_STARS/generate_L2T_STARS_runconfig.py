@@ -185,6 +185,7 @@ def generate_L2T_STARS_runconfig(
 
     # Set Job ID and Instance ID
     if job_ID is None:
+        timestamp = f"{time_UTC:%Y%m%d}"
         job_ID = timestamp
     if instance_ID is None:
         instance_ID = str(uuid4())  # Generate a unique UUID for the instance
