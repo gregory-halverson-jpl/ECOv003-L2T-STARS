@@ -353,7 +353,7 @@ def L2T_STARS(
         except Exception as e:
             logger.exception(e)
             raise AuxiliaryServerUnreachable(
-                f"Unable to scan Harmonized Landsat Sentinel server: {HLS_connection.remote}"
+                f"Unable to scan Harmonized Landsat Sentinel server: {CMR_SEARCH_URL}"
             )
 
         # Check for missing HLS Sentinel data
