@@ -9,6 +9,9 @@ class Prior:
     to constrain the solution and improve accuracy, especially when
     observations for the current date are sparse.
 
+    # WARNING: prior_NDVI_flag_filename and prior_albedo_flag_filename are using Apache Zip VFS
+    #  syntax, and are not suitable for use with Julia or GDAL.
+
     Attributes:
         using_prior (bool): True if a prior product is being used, False otherwise.
         prior_date_UTC (date): The UTC date of the prior product.

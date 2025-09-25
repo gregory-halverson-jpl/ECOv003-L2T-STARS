@@ -27,6 +27,32 @@ from .prior import Prior
 
 logger = logging.getLogger(__name__)
 
+
+def copy_prior_to_posterior(
+    posterior_filename: str,
+    posterior_UQ_filename: str,
+    posterior_flag_filename: str,
+    posterior_bias_filename: str,
+    posterior_bias_UQ_filename: str,
+    prior_filename: str,
+    prior_UQ_filename: str,
+    prior_flag_filename: str,
+    prior_bias_filename: str,
+    prior_bias_UQ_filename: str,
+):
+    """Helper function to assist with creating nearly-identical STARS granules"""
+    pairings = [
+        (posterior_filename, prior_filename),
+        (posterior_UQ_filename, prior_UQ_filename),
+        (posterior_flag_filename, prior_flag_filename),
+        (posterior_bias_filename, prior_bias_filename),
+        (posterior_bias_UQ_filename, prior_bias_UQ_filename),
+    ]
+
+    for posterior, prior in pairings:
+        image = Raster.open(prior)
+        image.to_geotiff(posterior, use_compression=False, include_preview=False)
+
 def process_STARS_product(
     tile: str,
     date_UTC: date,
@@ -192,30 +218,46 @@ def process_STARS_product(
 
     # Run Julia data fusion for NDVI, conditionally including prior data
     if using_prior:
-        logger.info("Running Julia data fusion for NDVI with prior data.")
-        process_julia_data_fusion(
-            tile=tile,
-            coarse_cell_size=NDVI_resolution,
-            fine_cell_size=target_resolution,
-            VIIRS_start_date=VIIRS_start_date,
-            VIIRS_end_date=VIIRS_end_date,
-            HLS_start_date=HLS_start_date,
-            HLS_end_date=HLS_end_date,
-            downsampled_directory=downsampled_directory,
-            product_name="NDVI",
-            posterior_filename=posterior_NDVI_filename,
-            posterior_UQ_filename=posterior_NDVI_UQ_filename,
-            posterior_flag_filename=posterior_NDVI_flag_filename,
-            posterior_bias_filename=posterior_NDVI_bias_filename,
-            posterior_bias_UQ_filename=posterior_NDVI_bias_UQ_filename,
-            prior_filename=prior.prior_NDVI_filename,
-            prior_UQ_filename=prior.prior_NDVI_UQ_filename,
-            prior_bias_filename=prior.prior_NDVI_bias_filename,
-            prior_bias_UQ_filename=prior.prior_NDVI_bias_UQ_filename,
-            initialize_julia=initialize_julia,
-            threads=threads,
-            num_workers=num_workers,
-        )
+        if prior.prior_date_UTC == date_UTC:
+            # WARNING: prior_NDVI_flag_filename is using Apache Zip VFS syntax, and is not suitable
+            #  for use with Julia or GDAL
+            copy_prior_to_posterior(
+                posterior_filename=posterior_NDVI_filename,
+                posterior_UQ_filename=posterior_NDVI_UQ_filename,
+                posterior_flag_filename=posterior_NDVI_flag_filename,
+                posterior_bias_filename=posterior_NDVI_bias_filename,
+                posterior_bias_UQ_filename=posterior_NDVI_bias_UQ_filename,
+                prior_filename=prior.prior_NDVI_filename,
+                prior_UQ_filename=prior.prior_NDVI_UQ_filename,
+                prior_flag_filename=prior.prior_NDVI_flag_filename,
+                prior_bias_filename=prior.prior_NDVI_bias_filename,
+                prior_bias_UQ_filename=prior.prior_NDVI_bias_UQ_filename,
+            )
+        else:
+            logger.info("Running Julia data fusion for NDVI with prior data.")
+            process_julia_data_fusion(
+                tile=tile,
+                coarse_cell_size=NDVI_resolution,
+                fine_cell_size=target_resolution,
+                VIIRS_start_date=VIIRS_start_date,
+                VIIRS_end_date=VIIRS_end_date,
+                HLS_start_date=HLS_start_date,
+                HLS_end_date=HLS_end_date,
+                downsampled_directory=downsampled_directory,
+                product_name="NDVI",
+                posterior_filename=posterior_NDVI_filename,
+                posterior_UQ_filename=posterior_NDVI_UQ_filename,
+                posterior_flag_filename=posterior_NDVI_flag_filename,
+                posterior_bias_filename=posterior_NDVI_bias_filename,
+                posterior_bias_UQ_filename=posterior_NDVI_bias_UQ_filename,
+                prior_filename=prior.prior_NDVI_filename,
+                prior_UQ_filename=prior.prior_NDVI_UQ_filename,
+                prior_bias_filename=prior.prior_NDVI_bias_filename,
+                prior_bias_UQ_filename=prior.prior_NDVI_bias_UQ_filename,
+                initialize_julia=initialize_julia,
+                threads=threads,
+                num_workers=num_workers,
+            )
     else:
         logger.info("Running Julia data fusion for NDVI without prior data.")
         process_julia_data_fusion(
@@ -294,30 +336,46 @@ def process_STARS_product(
 
     # Run Julia data fusion for albedo, conditionally including prior data
     if using_prior:
-        logger.info("Running Julia data fusion for albedo with prior data.")
-        process_julia_data_fusion(
-            tile=tile,
-            coarse_cell_size=albedo_resolution,
-            fine_cell_size=target_resolution,
-            VIIRS_start_date=VIIRS_start_date,
-            VIIRS_end_date=VIIRS_end_date,
-            HLS_start_date=HLS_start_date,
-            HLS_end_date=HLS_end_date,
-            downsampled_directory=downsampled_directory,
-            product_name="albedo",
-            posterior_filename=posterior_albedo_filename,
-            posterior_UQ_filename=posterior_albedo_UQ_filename,
-            posterior_flag_filename=posterior_albedo_flag_filename,
-            posterior_bias_filename=posterior_albedo_bias_filename,
-            posterior_bias_UQ_filename=posterior_albedo_bias_UQ_filename,
-            prior_filename=prior.prior_albedo_filename,
-            prior_UQ_filename=prior.prior_albedo_UQ_filename,
-            prior_bias_filename=prior.prior_albedo_bias_filename,
-            prior_bias_UQ_filename=prior.prior_albedo_bias_UQ_filename,
-            initialize_julia=initialize_julia,
-            threads=threads,
-            num_workers=num_workers,
-        )
+        if prior.prior_date_UTC == date_UTC:
+            # WARNING: prior_NDVI_flag_filename is using Apache Zip VFS syntax, and is not suitable
+            #  for use with Julia or GDAL
+            copy_prior_to_posterior(
+                posterior_filename=posterior_albedo_filename,
+                posterior_UQ_filename=posterior_albedo_UQ_filename,
+                posterior_flag_filename=posterior_albedo_flag_filename,
+                posterior_bias_filename=posterior_albedo_bias_filename,
+                posterior_bias_UQ_filename=posterior_albedo_bias_UQ_filename,
+                prior_filename=prior.prior_albedo_filename,
+                prior_UQ_filename=prior.prior_albedo_UQ_filename,
+                prior_flag_filename=prior.prior_albedo_flag_filename,
+                prior_bias_filename=prior.prior_albedo_bias_filename,
+                prior_bias_UQ_filename=prior.prior_albedo_bias_UQ_filename,
+            )
+        else:
+            logger.info("Running Julia data fusion for albedo with prior data.")
+            process_julia_data_fusion(
+                tile=tile,
+                coarse_cell_size=albedo_resolution,
+                fine_cell_size=target_resolution,
+                VIIRS_start_date=VIIRS_start_date,
+                VIIRS_end_date=VIIRS_end_date,
+                HLS_start_date=HLS_start_date,
+                HLS_end_date=HLS_end_date,
+                downsampled_directory=downsampled_directory,
+                product_name="albedo",
+                posterior_filename=posterior_albedo_filename,
+                posterior_UQ_filename=posterior_albedo_UQ_filename,
+                posterior_flag_filename=posterior_albedo_flag_filename,
+                posterior_bias_filename=posterior_albedo_bias_filename,
+                posterior_bias_UQ_filename=posterior_albedo_bias_UQ_filename,
+                prior_filename=prior.prior_albedo_filename,
+                prior_UQ_filename=prior.prior_albedo_UQ_filename,
+                prior_bias_filename=prior.prior_albedo_bias_filename,
+                prior_bias_UQ_filename=prior.prior_albedo_bias_UQ_filename,
+                initialize_julia=initialize_julia,
+                threads=threads,
+                num_workers=num_workers,
+            )
     else:
         logger.info("Running Julia data fusion for albedo without prior data.")
         process_julia_data_fusion(

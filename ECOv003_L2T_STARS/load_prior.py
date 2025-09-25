@@ -37,10 +37,12 @@ def load_prior(
     prior_date_UTC = None
     prior_NDVI_filename = None
     prior_NDVI_UQ_filename = None
+    prior_NDVI_flag_filename = None
     prior_NDVI_bias_filename = None
     prior_NDVI_bias_UQ_filename = None
     prior_albedo_filename = None
     prior_albedo_UQ_filename = None
+    prior_albedo_flag_filename = None
     prior_albedo_bias_filename = None
     prior_albedo_bias_UQ_filename = None
 
@@ -161,6 +163,12 @@ def load_prior(
             else:
                 prior_albedo_bias_UQ_filename = None # Set to None if not available
 
+            # HACK: Define prior_NDVI_flag_filename and prior_albedo_flag_filename using the Apache
+            #  Zip VFS syntax, to allow for reading directly from the zip file in the rare case that
+            #  it's necessary
+
+            prior_NDVI_flag_filename = L2T_STARS_prior_granule.layer_URI("NDVI-flag")
+            prior_albedo_flag_filename = L2T_STARS_prior_granule.layer_URI("albedo-flag")
 
             using_prior = True # Mark that a prior was successfully loaded
         except Exception as e:
@@ -228,8 +236,6 @@ def load_prior(
         prior_albedo_filename = None
         prior_albedo_UQ_filename = None
 
-    # FIXME where are `prior_NDVI_flag_filename` and `prior_albedo_flag_filename` defined?
-
     # Create and return the Prior object
     prior = Prior(
         using_prior=using_prior,
@@ -237,12 +243,12 @@ def load_prior(
         L2T_STARS_prior_filename=L2T_STARS_prior_filename,
         prior_NDVI_filename=prior_NDVI_filename,
         prior_NDVI_UQ_filename=prior_NDVI_UQ_filename,
-        # prior_NDVI_flag_filename=prior_NDVI_flag_filename,
+        prior_NDVI_flag_filename=prior_NDVI_flag_filename,
         prior_NDVI_bias_filename=prior_NDVI_bias_filename,
         prior_NDVI_bias_UQ_filename=prior_NDVI_bias_UQ_filename,
         prior_albedo_filename=prior_albedo_filename,
         prior_albedo_UQ_filename=prior_albedo_UQ_filename,
-        # prior_albedo_flag_filename=prior_albedo_flag_filename,
+        prior_albedo_flag_filename=prior_albedo_flag_filename,
         prior_albedo_bias_filename=prior_albedo_bias_filename,
         prior_albedo_bias_UQ_filename=prior_albedo_bias_UQ_filename,
     )
