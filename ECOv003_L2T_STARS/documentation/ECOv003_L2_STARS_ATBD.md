@@ -114,13 +114,15 @@ NDVI and albedo are critical biophysical parameters that capture vegetation heal
 
 ### Scope and Objectives
 
-This document provides:
+This Algorithm Theoretical Basis Document (ATBD) provides the scientific and technical foundation for the STARS algorithm. It includes:
 
 1. A description of the NDVI and albedo parameter characteristics and requirements.
 2. An overview of the STARS data fusion methodology and its theoretical foundation.
-3. Description of input data sources and preprocessing procedures.
+3. Mathematical formulations and statistical models.
 4. Implementation details for near-real-time processing.
 5. Quality assessment and uncertainty quantification approaches.
+
+For practical information on data access, file formats, processing workflows, and applications, please refer to the companion **ECOSTRESS Collection 3 Level-2 STARS NDVI & Albedo Data Product User Guide**.
 
 ---
 

@@ -11,12 +11,17 @@ ECOSTRESS Science Team
 Jet Propulsion Laboratory  
 California Institute of Technology
 
-**Kerry Cawse-Nicholson**  
+**Margaret Johnson**  
 ECOSTRESS Science Team  
 Jet Propulsion Laboratory  
 California Institute of Technology
 
-**Margaret Johnson**  
+**Simon Hook**  
+ECOSTRESS Science Team  
+Jet Propulsion Laboratory  
+California Institute of Technology
+
+**Kerry Cawse-Nicholson**  
 ECOSTRESS Science Team  
 Jet Propulsion Laboratory  
 California Institute of Technology
@@ -50,13 +55,11 @@ acknowledged.
 
 ---
 
-The users' guide is designed to be a living document that describes the ECOSTRESS data products. The document describes the current state of the
-art and is revised as progress is made in the development and assessment
-of the ECOSTRESS data products. The primary purpose of the document is
-to present an overview of the ECOSTRESS data products to the potential
-user. For more detailed information on the physical basis and algorithms
-used to produce these products, please see the Algorithm Theoretical
-Basis Document (ATBD).
+This User Guide provides practical information for accessing, understanding, and using the ECOSTRESS Collection 3 Level-2 STARS NDVI & Albedo data products. It covers product specifications, data access procedures, file formats, quality assessment, and recommended processing workflows.
+
+For detailed information on the scientific methodology, mathematical formulations, and algorithm implementation, please refer to the companion **ECOSTRESS Collection 3 Level-2 STARS NDVI & Albedo Algorithm Theoretical Basis Document (ATBD)**.
+
+This guide is designed to be a living document that is updated as the products evolve and user feedback is incorporated.
 
 **Contacts**
 
@@ -70,11 +73,8 @@ the following:
   Email: <gregory.h.halverson@jpl.nasa.gov>\
   Office: (626) 660-6818
 
-<!-- -->
-
-- Kerry Cawse-Nicholson
-
-  MS 183-501\
+- Kerry Cawse-Nicholson\
+  MS 183-601\
   Jet Propulsion Laboratory\
   4800 Oak Grove Dr.\
   Pasadena, CA 91109\
@@ -85,22 +85,38 @@ the following:
   Jet Propulsion Laboratory\
   4800 Oak Grove Dr.\
   Pasadena, CA 91109\
-  Email: <maggie.johnson@jpl.nasa.gov>
-
+  Email: <maggie.johnson@jpl.nasa.gov>\
   Office: (818) 354-8885
+
+- Simon Hook\
+  MS 183-600\
+  Jet Propulsion Laboratory\
+  4800 Oak Grove Dr.\
+  Pasadena, CA 91109\
+  Email: <simon.j.hook@jpl.nasa.gov>\
+  Office: (818) 354-0974
 
 
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-   - [Cloud-Optimized GeoTIFF Orbit/Scene/Tile Products](#cloud-optimized-geotiff-orbitscenetile-products)
+   - [Product Overview](#product-overview)
+   - [Data Access and Availability](#data-access-and-availability)
+   - [File Format and Structure](#file-format-and-structure)
+2. [Product Specifications](#product-specifications)
+   - [Data Layers](#data-layers)
    - [Quality Flags](#quality-flags)
-   - [Product Availability](#product-availability)
-2. [L2T STARS NDVI & Albedo Product](#l2t-stars-ndvi-and-albedo-product)
-3. [Standard Metadata](#standard-metadata)
-4. [Acknowledgements](#acknowledgements)
-5. [Bibliography](#bibliography)
+   - [Spatial and Temporal Characteristics](#spatial-and-temporal-characteristics)
+3. [Data Usage Guidelines](#data-usage-guidelines)
+   - [Recommended Processing Workflow](#recommended-processing-workflow)
+   - [Software Compatibility](#software-compatibility)
+   - [Quality Assessment](#quality-assessment)
+4. [Common Applications](#common-applications)
+5. [Metadata](#metadata)
+6. [Troubleshooting](#troubleshooting)
+7. [Acknowledgements](#acknowledgements)
+8. [References](#references)
 
 ### List of Tables
 
@@ -113,11 +129,15 @@ the following:
 
 # Introduction
 
-This is the user guide for the ECOSTRESS tiled products. ECOSTRESS
-acquires data within an orbit, and this orbit path is divided into
-scenes roughly 935 x 935 km in size. The ECOSTRESS orbit/scene/tile
-products are distributed in Cloud-Optimized GeoTIFF (COG) format. The
-tiled products are listed in Table 1.
+## Product Overview
+
+The ECOSTRESS Collection 3 Level-2 STARS NDVI & Albedo product (L2T_STARS) provides high-resolution (70 m) estimates of Normalized Difference Vegetation Index (NDVI) and broadband shortwave albedo that are temporally and spatially coincident with each ECOSTRESS Land Surface Temperature & Emissivity (L2T_LSTE) observation.
+
+These products are generated using the **Spatial Timeseries for Automated high-Resolution multi-Sensor data fusion (STARS)** algorithm, which optimally combines:
+- **High spatial resolution** data from Harmonized Landsat Sentinel (HLS) 2.0 products (30 m, 3-5 day revisit)
+- **High temporal resolution** data from VIIRS VNP09GA products (500 m-1 km, daily coverage)
+
+The result is gap-filled, analysis-ready NDVI and albedo data at ECOSTRESS resolution with quantified uncertainties, essential for evapotranspiration modeling and land surface analysis.
 
 | **Product Long Name** | **Product Short Name** |
 |---|---|
@@ -134,98 +154,312 @@ tiled products are listed in Table 1.
 
 **Table 1.** Listing of ECOSTRESS tiled products long names and short names.
 
-## Cloud-Optimized GeoTIFF Orbit/Scene/Tile Products 
+## File Format and Structure
 
-To provide an analysis-ready format, the ECOSTRESS products are
-distributed in a tiled form and using the COG format. The tiled products
-include the letter T in their level identifiers: L1CT, L2T, L3T, and
-L4T. The tiling system used for ECOSTRESS is borrowed from the modified
-Military Grid Reference System (MGRS) tiling scheme used by Sentinel 2.
-These tiles divide the Universal Transverse Mercator (UTM) zones into
-square tiles 109800 m across. ECOSTRESS uses a 70 m cell size with 1568
-rows by 1568 columns in each tile, totaling 2.46 million pixels per
-tile. This allows the end user to assume that each 70 m ECOSTRESS pixel
-will remain in the same location at each timestep observed in analysis.
-The COG format also facilitates end-user analysis as a universally
-recognized and supported format, compatible with open-source software,
-including QGIS, ArcGIS, GDAL, the Raster package in R, rioxarray in
-Python, and Rasters.jl in Julia.
+### Cloud-Optimized GeoTIFF (COG) Format
+All L2T_STARS products are distributed as Cloud-Optimized GeoTIFFs, providing:
+- **Efficient streaming** and partial data access
+- **Universal compatibility** with GIS software and programming libraries
+- **Built-in pyramids** for multi-resolution visualization
+- **Standardized georeferencing** with embedded spatial reference information
 
-Each float32 data layer occupies 4 bytes of storage per pixel, which
-amounts to an uncompressed size of 13.4 mb for each tiled data layer.
-The uint8 quality flag layers occupy a single byte per pixel, which
-amounts to an uncompressed size of 3.35 mb per tiled data quality layer.
+### Tiling System
+- **Tiling scheme**: Modified Military Grid Reference System (MGRS) used by Sentinel-2
+- **Tile size**: 109.8 km × 109.8 km
+- **Pixel size**: 70 m × 70 m
+- **Array dimensions**: 1,568 × 1,568 pixels per tile
+- **Projection**: UTM zone-specific
 
-Each .tif COG data layer in each L2T/L3T/L4T product additionally
-contains a rendered browse image in GeoJPEG format with a .jpeg
-extension. This image format is universally recognized and supported,
-and these files are compatible with Google Earth. Each L2T/L3T/L4T tile
-granule includes a .json file containing the Product Metadata and
-Standard Metadata in JSON format.
+### File Naming Convention
+```
+ECOSTRESS_L2T_STARS_[TileID]_[AcquisitionDateTime]_[ProductionDateTime]_[Version].tif
+```
+
+Example:
+```
+ECOSTRESS_L2T_STARS_T11SPS_20241008T183000_20241009T120000_02.tif
+```
+
+### File Components
+Each L2T_STARS granule contains:
+- **Data files**: Individual GeoTIFF files for each data layer
+- **Browse images**: JPEG preview images for quick visualization
+- **Metadata file**: JSON file with product and standard metadata
+- **Quality layers**: Cloud and water masks
 
 ## Quality Flags
 
-Two high-level quality flags are provided in all gridded and tiled
-products as thematic/binary masks encoded to zero and one in unsigned
-8-bit integer layers. The cloud layer represents the final cloud test
-from L2 CLOUD. The water layer represents the surface water body in the
-Shuttle Radar Topography Mission (SRTM) Digital Elevation Model. For
-both layers, zero means absence, and one means presence. Pixels with the
-value 1 in the cloud layer represent detection of cloud in that pixel.
-Pixels with the value 1 in the water layer represent open water surface
-in that pixel. All tiled product data layers written in float32 contain
-a standard not-a-number (NaN) value at each pixel that could not be
-retrieved. The cloud and water layers are provided to explain these
-missing values.
+## Spatial and Temporal Characteristics
 
-## Product Availability
+### Spatial Resolution
+- **Native resolution**: 70 m × 70 m
+- **Coordinate system**: UTM (zone-specific)
+- **Resampling method**: Bilinear interpolation from input sources
+- **Spatial extent**: Global land areas (±60° latitude)
 
-The ECOSTRESS products are available at the NASA Land Processes
-Distribution Active Archive Center (LP-DAAC),
-https://earthdata.nasa.gov/ and can be accessed via the Earthdata search
-engine.
+### Temporal Resolution
+- **Observation frequency**: Variable based on ISS orbit (typically 3-4 days)
+- **Temporal coverage**: Daytime overpasses only
+- **Data continuity**: Gap-filled using temporal fusion algorithm
+- **Archive period**: 2018-present
 
-# L2T STARS NDVI & Albedo Product
+## Quality Flags
 
-NDVI and albedo are estimated at 70 m ECOSTRESS standard resolution for each
-daytime ECOSTRESS overpass by fusing temporally sparse but fine spatial
-resolution images from the Harmonized Landsat Sentinel (HLS) 2.0 product
-with daily, moderate spatial resolution images from the Suomi NPP
-Visible Infrared Imaging Radiometer Suite (VIIRS) VNP09GA product. The
-data fusion is performed using a variant of the Spatial Timeseries for
-Automated high-Resolution multi-Sensor data fusion (STARS) algorithm
-developed by Dr. Margaret Johnson and Gregory Halverson at the Jet
-Propulsion Laboratory. STARS is a Bayesian timeseries methodology that
-provides streaming data fusion and uncertainty quantification through
-efficient Kalman filtering.
+### Standard Quality Masks
+Two binary quality flags are provided as unsigned 8-bit integer layers:
 
-Operationally, each L2T STARS tile run loads the means and covariances
-of the STARS model saved from the most recent tile run, then iteratively
-advances the means and covariances forward each day updating with fine
-imagery from HLS and/or moderate resolution imagery from VIIRS up to the
-day of the target ECOSTRESS overpass. A pixelwise, lagged 16-day
-implementation of the VNP43 algorithm (Schaaf, 2017) is used for a
-near-real-time BRDF correction on the VNP09GA products to produce VIIRS
-NDVI and albedo. The layers of the L2T STARS product are listed in Table
-2. All layers of this product are represented by 32-bit floating point
-arrays. The NDVI estimates and 1σ uncertainties (-UQ) are
-unitless from -1 to 1. The albedo estimates and 1σ uncertainties
-(-UQ) are proportions from 0 to 1.
+- **cloud**: Cloud detection mask from L2_CLOUD product
+  - 0 = Clear sky
+  - 1 = Cloud detected
 
-| **Name** | **Description** | **Type** | **Units** | **Fill Value** | **No Data Value** | **Valid Min** | **Valid Max** | **Scale Factor** | **Size** |
-|---|---|---|---|---|---|---|---|---|---|
-| NDVI | Normalized Difference Vegetation Index | float32 | Index | NaN | N/A | -1 | 1 | N/A | 12.96 mb |
-| NDVI-UQ | NDVI Uncertainty | float32 | Index | NaN | N/A | -1 | 1 | N/A | 12.96 mb |
-| NDVI-bias | NDVI Bias | float32 | Index | NaN | N/A | N/A | N/A | N/A | 12.96 mb |
-| NDVI-bias-UQ | NDVI Bias Uncertainty | float32 | Index | NaN | N/A | N/A | N/A | N/A | 12.96 mb |
-| albedo | Albedo | float32 | Ratio | NaN | N/A | 0 | 1 | N/A | 12.96 mb |
-| albedo-UQ | Albedo Uncertainty | float32 | Ratio | NaN | N/A | 0 | 1 | N/A | 12.96 mb |
-| albedo-bias | Albedo Bias | float32 | Ratio | NaN | N/A | N/A | N/A | N/A | 12.96 mb |
-| albedo-bias-UQ | Albedo Bias Uncertainty | float32 | Ratio | NaN | N/A | N/A | N/A | N/A | 12.96 mb |
+- **water**: Surface water body mask from SRTM DEM
+  - 0 = Land surface
+  - 1 = Open water surface
 
-**Table 2.** Listing of the L2T STARS data layers.
+### Data Quality Indicators
+- **Fill values**: NaN (Not-a-Number) for float32 data layers
+- **Valid data range**: 
+  - NDVI: -1.0 to 1.0
+  - Albedo: 0.0 to 1.0
+  - Uncertainties: 0.0 to maximum valid range
 
-# Standard Metadata
+## Data Access and Availability
+
+### Distribution and Access
+The L2T_STARS products are distributed through:
+- **NASA Earthdata**: https://earthdata.nasa.gov/
+- **LP DAAC Data Pool**: https://e4ftl01.cr.usgs.gov/
+- **NASA Worldview**: https://worldview.earthdata.nasa.gov/
+- **AppEEARS**: https://appeears.earthdatacloud.nasa.gov/
+
+### Data Latency
+- **Near Real-Time**: Products are typically available within 1-3 days of ECOSTRESS observation
+- **Reprocessing**: Historical data are reprocessed as algorithm improvements are implemented
+
+### Spatial Coverage
+- **Global land areas** excluding regions poleward of ±60° latitude
+- **Tiled format** using modified MGRS tiling system
+- **Individual tiles**: 109.8 km × 109.8 km at 70 m resolution
+
+### Authentication Requirements
+- NASA Earthdata Login account required for data access
+- Free registration at: https://urs.earthdata.nasa.gov/
+
+# Product Specifications
+
+## Data Layers
+
+The L2T_STARS product contains eight data layers providing NDVI and albedo estimates with associated uncertainties and bias corrections:
+
+### Primary Data Products:
+- **NDVI**: Normalized Difference Vegetation Index estimates
+- **albedo**: Broadband shortwave albedo estimates
+
+### Uncertainty Products:
+- **NDVI-UQ**: One-sigma uncertainty of NDVI estimates
+- **albedo-UQ**: One-sigma uncertainty of albedo estimates
+
+### Bias Correction Products:
+- **NDVI-bias**: Systematic bias correction applied to NDVI
+- **albedo-bias**: Systematic bias correction applied to albedo
+- **NDVI-bias-UQ**: Uncertainty in NDVI bias correction
+- **albedo-bias-UQ**: Uncertainty in albedo bias correction
+
+| **Layer Name** | **Description** | **Data Type** | **Units** | **Valid Range** | **Fill Value** | **File Size** |
+|---|---|---|---|---|---|---|
+| NDVI | Normalized Difference Vegetation Index | float32 | Dimensionless | -1.0 to 1.0 | NaN | 12.96 MB |
+| NDVI-UQ | NDVI One-sigma Uncertainty | float32 | Dimensionless | 0.0 to 1.0 | NaN | 12.96 MB |
+| NDVI-bias | NDVI Bias Correction | float32 | Dimensionless | Variable | NaN | 12.96 MB |
+| NDVI-bias-UQ | NDVI Bias Uncertainty | float32 | Dimensionless | 0.0 to 1.0 | NaN | 12.96 MB |
+| albedo | Broadband Shortwave Albedo | float32 | Dimensionless | 0.0 to 1.0 | NaN | 12.96 MB |
+| albedo-UQ | Albedo One-sigma Uncertainty | float32 | Dimensionless | 0.0 to 1.0 | NaN | 12.96 MB |
+| albedo-bias | Albedo Bias Correction | float32 | Dimensionless | Variable | NaN | 12.96 MB |
+| albedo-bias-UQ | Albedo Bias Uncertainty | float32 | Dimensionless | 0.0 to 1.0 | NaN | 12.96 MB |
+
+**Table 2.** L2T_STARS data layer specifications.
+
+---
+
+# Data Usage Guidelines
+
+## Recommended Processing Workflow
+
+### 1. Data Discovery and Download
+```python
+# Example using Python
+import requests
+from pathlib import Path
+
+# Search for L2T_STARS data using CMR API
+# Download data using NASA Earthdata authentication
+```
+
+### 2. Data Loading and Inspection
+```python
+# Example using rioxarray
+import rioxarray as rxr
+import numpy as np
+
+# Load NDVI data
+ndvi = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_NDVI.tif')
+ndvi_unc = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_NDVI-UQ.tif')
+
+# Check data quality
+valid_data = ~np.isnan(ndvi.values)
+print(f"Valid pixels: {valid_data.sum()} / {valid_data.size}")
+```
+
+### 3. Quality Assessment
+```python
+# Apply quality filters
+cloud_mask = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_cloud.tif')
+water_mask = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_water.tif')
+
+# Create combined quality mask
+quality_mask = (cloud_mask == 0) & (water_mask == 0)
+filtered_ndvi = ndvi.where(quality_mask)
+```
+
+## Software Compatibility
+
+### Python Libraries
+- **rioxarray**: Recommended for xarray-based analysis
+- **GDAL/rasterio**: Low-level raster operations
+- **xarray**: Multi-dimensional data analysis
+- **matplotlib/cartopy**: Visualization and mapping
+
+### R Packages
+- **terra**: Modern raster data handling
+- **raster**: Traditional raster operations
+- **stars**: Spatiotemporal data cubes
+- **sf**: Spatial data manipulation
+
+### Desktop GIS Software
+- **QGIS**: Free, open-source GIS
+- **ArcGIS**: Commercial GIS software
+- **ENVI**: Specialized remote sensing software
+
+### Command Line Tools
+- **GDAL utilities**: gdalinfo, gdal_translate, gdalwarp
+- **NCO operators**: For netCDF-like operations
+
+## Quality Assessment
+
+### Uncertainty Interpretation
+- **Low uncertainty** (< 0.1): High confidence in estimates
+- **Moderate uncertainty** (0.1 - 0.3): Reasonable confidence
+- **High uncertainty** (> 0.3): Use with caution
+
+### Recommended Quality Filters
+1. **Remove cloudy pixels**: Use cloud mask
+2. **Consider water pixels**: Apply water mask if studying land only
+3. **Check uncertainty values**: Filter based on application requirements
+4. **Validate against field data**: When available for your study area
+
+### Common Quality Issues
+- **High uncertainty near cloud edges**
+- **Potential artifacts in mountainous terrain**
+- **Reduced accuracy in very dense canopies**
+- **Seasonal bias in high-latitude regions**
+
+---
+
+# Common Applications
+
+## Scientific Research
+- **Evapotranspiration modeling**: Primary input for ET algorithms
+- **Vegetation monitoring**: Phenology and health assessment
+- **Land surface energy balance**: Albedo for radiation modeling
+- **Climate studies**: Surface property characterization
+
+## Agricultural Applications
+- **Crop health monitoring**: NDVI time series analysis
+- **Irrigation management**: Water stress detection
+- **Yield prediction**: Vegetation vigor assessment
+- **Precision agriculture**: Field-scale variability mapping
+
+## Environmental Monitoring
+- **Drought assessment**: Vegetation stress indicators
+- **Ecosystem health**: Biodiversity and conservation
+- **Land cover change**: Deforestation and urbanization
+- **Fire risk assessment**: Vegetation moisture content
+
+## Operational Uses
+- **Water resource management**: ET-based water budgets
+- **Natural resource inventory**: Forest and rangeland assessment
+- **Disaster response**: Rapid vegetation assessment
+- **Policy support**: Environmental compliance monitoring
+
+---
+
+# Troubleshooting
+
+## Common Issues and Solutions
+
+### Data Access Problems
+**Issue**: Cannot download data from LP DAAC
+**Solution**: 
+- Verify Earthdata Login credentials
+- Check network connectivity
+- Ensure proper authentication in download scripts
+
+**Issue**: Files appear corrupted or incomplete
+**Solution**:
+- Re-download the file
+- Verify file size matches expected size
+- Check MD5 checksums if provided
+
+### Data Processing Issues
+**Issue**: Cannot open GeoTIFF files
+**Solution**:
+- Update GDAL to version 3.0 or higher
+- Verify file integrity with `gdalinfo`
+- Check for proper file extension (.tif)
+
+**Issue**: Unexpected NaN values
+**Solution**:
+- Check cloud and water masks
+- Verify data is within valid range
+- Consider seasonal data availability
+
+### Quality Assessment Problems
+**Issue**: High uncertainty values everywhere
+**Solution**:
+- Check input data availability for that time period
+- Verify geographic location (polar regions excluded)
+- Consider atmospheric conditions (heavy aerosols, persistent clouds)
+
+**Issue**: NDVI values seem unrealistic
+**Solution**:
+- Verify units (should be -1 to 1)
+- Check for scaling issues in your software
+- Compare with concurrent Landsat/Sentinel-2 data
+
+### Performance Issues
+**Issue**: Slow data loading
+**Solution**:
+- Use COG-aware libraries (rioxarray, GDAL 3.x)
+- Implement spatial/temporal subsetting
+- Consider using lower resolution overviews for exploration
+
+## Getting Help
+
+### Support Resources
+- **LP DAAC User Services**: https://lpdaac.usgs.gov/contact-us/
+- **ECOSTRESS Documentation**: https://ecostress.jpl.nasa.gov/
+- **Earthdata Forum**: https://forum.earthdata.nasa.gov/
+
+### Reporting Issues
+When reporting data quality issues, please provide:
+- Product name and version
+- Specific tile ID and date
+- Geographic coordinates of the issue
+- Screenshots or data examples
+- Description of expected vs. observed behavior
+
+---
+
+# Metadata
 
 Each ECOSTRESS product bundle contains two sets of product metadata:
 
@@ -308,7 +542,17 @@ We would like to thank the HLS and VIIRS teams for providing the input data prod
 
 We would like to thank the entire ECOSTRESS Science Team for their contributions to algorithm development and product validation.
 
-# 5. Bibliography
+# References
 
-Schaaf, C. (2017). *VIIRS BRDF, Albedo, and NBAR Product Algorithm
-Theoretical Basis Document (ATBD).* NASA Goddard Space Flight Center.
+## Primary Algorithm Reference
+Johnson, M. C., G. Halverson, J. Susiluoto, K. Cawse-Nicholson, G. Hulley, and J. B. Fisher (2022), STARS: Spatial Timeseries for Automated high-Resolution multi-Sensor data fusion [Presentation], ECOSTRESS Science and Applications Team Meeting, Nov 2022, Ventura, CA.
+
+## Related Documentation
+- **ECOSTRESS L2T_STARS ATBD**: Algorithm Theoretical Basis Document for detailed methodology
+- **HLS User Guide**: https://lpdaac.usgs.gov/documents/1698/HLS_User_Guide_V2.pdf
+- **VIIRS Surface Reflectance Guide**: https://viirsland.gsfc.nasa.gov/PDF/VIIRS_Surf_Refl_UserGuide_v1.3.pdf
+
+## Supporting References
+Schaaf, C. (2017), MCD43A1 MODIS/Terra+Aqua BRDF/Albedo Model Parameters Daily L3 Global - 500m V006 [Data set], NASA EOSDIS Land Processes DAAC.
+
+Liang, S. (2001), Narrowband to broadband conversions of land surface albedo I: Algorithms, *Remote Sensing of Environment*, *76*(2), 213-238.
