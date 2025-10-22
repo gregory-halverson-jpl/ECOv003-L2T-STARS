@@ -205,7 +205,7 @@ Each L2T_STARS granule contains:
 ### Standard Quality Masks
 Two binary quality flags are provided as unsigned 8-bit integer layers:
 
-- **cloud**: Cloud detection mask from L2_CLOUD product
+- **cloud**: Cloud detection mask from L2 CLOUD product
   - 0 = Clear sky
   - 1 = Cloud detected
 
