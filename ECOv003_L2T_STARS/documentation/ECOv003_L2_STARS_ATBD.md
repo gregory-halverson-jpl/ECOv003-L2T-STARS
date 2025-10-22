@@ -2,7 +2,7 @@
 
 **ECOsystem Spaceborne Thermal Radiometer Experiment on Space Station (ECOSTRESS)**
 
-**October 8, 2025**
+**October 22, 2025**
 
 ## Authors
 
