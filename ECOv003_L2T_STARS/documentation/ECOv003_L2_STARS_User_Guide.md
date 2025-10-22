@@ -2,7 +2,7 @@
 
 **ECOsystem Spaceborne Thermal Radiometer Experiment on Space Station (ECOSTRESS)**
 
-**October 8, 2025**
+**October 22, 2025**
 
 ## Authors
 
@@ -279,44 +279,6 @@ The L2T_STARS product contains eight data layers providing NDVI and albedo estim
 
 # Data Usage Guidelines
 
-## Recommended Processing Workflow
-
-### 1. Data Discovery and Download
-```python
-# Example using Python
-import requests
-from pathlib import Path
-
-# Search for L2T_STARS data using CMR API
-# Download data using NASA Earthdata authentication
-```
-
-### 2. Data Loading and Inspection
-```python
-# Example using rioxarray
-import rioxarray as rxr
-import numpy as np
-
-# Load NDVI data
-ndvi = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_NDVI.tif')
-ndvi_unc = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_NDVI-UQ.tif')
-
-# Check data quality
-valid_data = ~np.isnan(ndvi.values)
-print(f"Valid pixels: {valid_data.sum()} / {valid_data.size}")
-```
-
-### 3. Quality Assessment
-```python
-# Apply quality filters
-cloud_mask = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_cloud.tif')
-water_mask = rxr.open_rasterio('ECOSTRESS_L2T_STARS_*_water.tif')
-
-# Create combined quality mask
-quality_mask = (cloud_mask == 0) & (water_mask == 0)
-filtered_ndvi = ndvi.where(quality_mask)
-```
-
 ## Software Compatibility
 
 ### Python Libraries
@@ -343,9 +305,20 @@ filtered_ndvi = ndvi.where(quality_mask)
 ## Quality Assessment
 
 ### Uncertainty Interpretation
-- **Low uncertainty** (< 0.1): High confidence in estimates
-- **Moderate uncertainty** (0.1 - 0.3): Reasonable confidence
-- **High uncertainty** (> 0.3): Use with caution
+The uncertainty values represent one-sigma (standard deviation) estimates from the STARS Kalman filtering algorithm. These values quantify the expected error in NDVI and albedo estimates due to:
+- **Measurement noise** from input sensors
+- **Temporal interpolation** when direct observations are unavailable  
+- **Spatial downscaling** from coarse to fine resolution
+
+**Relative uncertainty assessment:**
+- **Lower uncertainty values** indicate more reliable estimates with recent, high-quality input observations
+- **Higher uncertainty values** indicate greater reliance on temporal gap-filling or limited input data
+- **Context-dependent interpretation**: Acceptable uncertainty levels vary by application and study requirements
+
+**Recommended approach:**
+- Examine uncertainty distributions for your specific study area and time period
+- Compare uncertainty values with your application's accuracy requirements
+- Use uncertainty values for weighted analysis or to identify pixels requiring field validation
 
 ### Recommended Quality Filters
 1. **Remove cloudy pixels**: Use cloud mask
