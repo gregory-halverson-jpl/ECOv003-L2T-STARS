@@ -293,36 +293,33 @@ If no new measurements are available on day $t+1$, the mean estimate is propagat
 
 **Near-Real-Time Processing:**
 
-STARS NDVI/albedo products corresponding to each daytime L2T_LSTE product are produced by:
+STARS NDVI/albedo products corresponding to each daytime L2T LSTE product are produced by:
 
-1. Loading the means and covariances from the previous L2T_LSTE product day
+1. Loading the means and covariances from the previous L2T LSTE product day
 2. Downloading available measurements (VIIRS, HLS, etc.) between overpasses
 3. Kalman filtering forward the NDVI/albedo estimates to the current target day
 
-The latency of this operation depends on the availability of input products. The coincident STARS NDVI and albedo products, along with their pixel-wise uncertainties, are recorded in the L2T_STARS product.
+The latency of this operation depends on the availability of input products. The coincident STARS NDVI and albedo products, along with their pixel-wise uncertainties, are recorded in the L2T STARS product.
 
 ---
 
-## Mask/Flag Derivation
+## Quality Assessment and Uncertainty Quantification
 
-Quality flags and masks are derived from multiple sources to ensure reliable NDVI and albedo estimates:
+The STARS algorithm incorporates quality assessment at the input processing stage and provides uncertainty quantification in the final products:
 
-**Input Data Quality Assessment:**
-- **HLS quality flags**: Cloud, cirrus, snow/ice, and water masks from HLS QA bands
-- **VIIRS quality flags**: Pixel quality indicators from VNP09GA QF bands
-- **BRDF quality**: Assessment of BRDF model fit quality and availability
+**Input Data Quality Processing:**
+- **VIIRS quality assessment**: VNP09GA and VNP43 products include quality flags that are used during BRDF processing
+- **Cloud masking**: Applied during VIIRS data processing to exclude contaminated observations
+- **BRDF model quality**: Assessment of BRDF model fit quality affects the reliability of VIIRS inputs
 
-**STARS-Specific Quality Indicators:**
-- **Fusion confidence**: Based on number and quality of input observations
-- **Temporal consistency**: Flags for unusual temporal changes that may indicate errors
-- **Spatial coherence**: Assessment of spatial consistency in fused estimates
-- **Uncertainty thresholds**: Quality levels based on estimated uncertainty magnitudes
+**STARS Product Uncertainty Quantification:**
+The STARS algorithm provides pixel-wise uncertainty estimates through the Kalman filtering framework:
+- **NDVI uncertainty**: Standard deviation of the posterior NDVI estimate
+- **Albedo uncertainty**: Standard deviation of the posterior albedo estimate
+- **Uncertainty sources**: Quantifies uncertainty from measurement noise, temporal interpolation, and spatial downscaling
 
-**Quality Flag Structure:**
-- **Level 1** (Best): High-quality inputs with low uncertainty
-- **Level 2** (Good): Adequate inputs with moderate uncertainty  
-- **Level 3** (Fair): Limited inputs or higher uncertainty
-- **Level 4** (Poor): Heavily gap-filled with high uncertainty
+**Data Availability Indicator:**
+The algorithm generates a binary flag indicating whether high-resolution HLS observations were available within a 7-day window of the target date. This flag helps users assess the degree to which estimates rely on temporal gap-filling versus direct observations.
 
 ---
 
@@ -349,7 +346,7 @@ Quality flags and masks are derived from multiple sources to ensure reliable NDV
 - **Spatial extent:** All land globally, excluding poleward ±60°
 - **Processing level:** Level-2 (L2T)
 - **Latency:** Near real-time
-- **Quality flags:** 4-level system (1=best, 4=worst)
+- **Data availability flag:** Binary indicator of HLS observation recency
 
 ### Uncertainty Layers
 - **NDVI uncertainty:** Standard deviation of NDVI estimate
